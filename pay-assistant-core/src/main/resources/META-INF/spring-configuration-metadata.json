@@ -1,0 +1,49 @@
+{
+  "groups": [
+    {
+      "name": "pay",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "pay.modes",
+      "type": "java.lang.String",
+      "description": "支付方式",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayProperties",
+      "defaultValue": [
+        "wx",
+        "ali"
+      ]
+    },
+    {
+      "name": "pay.wx.app-id",
+      "type": "java.lang.String",
+      "description": "appId",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties",
+      "defaultValue": ""
+    },
+    {
+      "name": "pay.ali.app-id",
+      "type": "java.lang.String",
+      "description": "appId",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayAliProperties",
+      "defaultValue": ""
+    }
+  ],
+  "hints": [
+    {
+      "name": "pay.modes",
+      "values": [
+        {
+          "value": "wx",
+          "description": "微信"
+        },
+        {
+          "value": "ali",
+          "description": "支付宝"
+        }
+      ]
+    }
+  ]
+}

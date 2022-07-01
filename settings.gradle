@@ -1,0 +1,5 @@
+rootProject.name = 'pay-assistant'
+
+include 'pay-assistant-core'
+include 'pay-assistant-annotation'
+include 'pay-assistant-boot-starter'
