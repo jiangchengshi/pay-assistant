@@ -24,6 +24,8 @@ public class WxPayApi {
     private PayWxProperties payWxProperties;
     private HttpHelper httpHelper;
 
+    private final String wxPayServer = "https://api.mch.weixin.qq.com";
+
     /**
      * 下单
      *
@@ -61,10 +63,12 @@ public class WxPayApi {
         jsonPayer.put("openid", placeOrderParam.getOpenId());
         jsonObject.put("payer", jsonPayer);
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), "POST", "/v3/pay/transactions/jsapi", jsonObject.toString()));
+        String reqAbsoluteUrl = "/v3/pay/transactions/jsapi";
 
-        String result = httpHelper.doPostJson("https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi", null, headers, jsonObject.toJSONString());
+        Map<String, String> headers = new HashMap<>(1);
+        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), "POST", reqAbsoluteUrl, jsonObject.toString()));
+
+        String result = httpHelper.doPostJson(wxPayServer + reqAbsoluteUrl, null, headers, jsonObject.toJSONString());
         return result != null;
     }
 

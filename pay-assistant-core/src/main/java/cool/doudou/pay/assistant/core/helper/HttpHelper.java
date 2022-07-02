@@ -72,7 +72,6 @@ public class HttpHelper {
         Request.Builder builder = new Request.Builder();
         builder.addHeader("Content-Type", "application/json");
         builder.addHeader("Accept", "application/json");
-        builder.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586");
         if (headers != null && headers.keySet().size() > 0) {
             headers.keySet().forEach((key) -> builder.addHeader(key, headers.get(key)));
         }
@@ -81,7 +80,7 @@ public class HttpHelper {
         Request request = builder.url(url).post(requestBody).build();
 
         System.out.println("url => " + url);
-        System.out.println("headers => " + request.headers());
+        System.out.println("authorization => " + request.headers("Authorization"));
         System.out.println("params => " + params);
         System.out.println("body => " + jsonBody);
 

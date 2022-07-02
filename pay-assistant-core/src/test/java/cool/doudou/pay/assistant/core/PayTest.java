@@ -40,12 +40,12 @@ public class PayTest {
             wxPayApi.setHttpHelper(httpHelper);
 
             PlaceOrderParam placeOrderParam = new PlaceOrderParam();
-            placeOrderParam.setOutTradeNo("SN123456789");
+            placeOrderParam.setOutTradeNo("1217752501201407033233368399");
             placeOrderParam.setDescription("test");
-            placeOrderParam.setTimeExpire("2022-06-30T22:12:00+08:00:00");
+            placeOrderParam.setTimeExpire("2022-07-02T16:10:00+08:00");
             placeOrderParam.setAttach("订单测试");
             placeOrderParam.setMoney(BigDecimal.valueOf(200));
-            placeOrderParam.setOpenId("wx000010000100001");
+            placeOrderParam.setOpenId("o4GgauInH_RCEdvrrNGrntXDuXXX");
 
             assertTrue(wxPayApi.place(placeOrderParam));
         } catch (Exception e) {
