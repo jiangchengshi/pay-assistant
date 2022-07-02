@@ -14,4 +14,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class PayWxProperties {
     private String appId;
     private String mchId;
+    private String certificatePath;
+    private String certificateSerialNumber;
 }

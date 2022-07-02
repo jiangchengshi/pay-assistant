@@ -1,4 +1,6 @@
-package cool.doudou.pay.assistant.core;
+package cool.doudou.pay.assistant.core.factory;
+
+import cool.doudou.pay.assistant.core.enums.PayModeEnum;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

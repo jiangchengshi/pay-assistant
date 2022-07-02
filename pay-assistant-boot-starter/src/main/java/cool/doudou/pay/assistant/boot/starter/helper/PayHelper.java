@@ -1,10 +1,9 @@
 package cool.doudou.pay.assistant.boot.starter.helper;
 
-import cool.doudou.pay.assistant.core.PayModeEnum;
+import cool.doudou.pay.assistant.core.enums.PayModeEnum;
 import cool.doudou.pay.assistant.core.api.AliPayApi;
 import cool.doudou.pay.assistant.core.api.WxPayApi;
 import cool.doudou.pay.assistant.core.entity.PlaceOrderParam;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

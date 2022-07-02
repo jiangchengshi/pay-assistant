@@ -1,7 +1,7 @@
 package cool.doudou.pay.assistant.boot.starter.auto.configuration;
 
-import cool.doudou.pay.assistant.core.config.PayConfig;
 import cool.doudou.pay.assistant.boot.starter.helper.PayHelper;
+import cool.doudou.pay.assistant.core.config.PayConfig;
 import cool.doudou.pay.assistant.core.properties.PayAliProperties;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;

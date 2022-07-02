@@ -7,8 +7,10 @@
         <property name="notifyServer" value="http://192.168.0.48:8000"/>
     </bean>
     <bean id="payWxProperties" class="cool.doudou.pay.assistant.core.properties.PayWxProperties">
-        <property name="appId" value="12345"/>
-        <property name="mchId" value="67890"/>
+        <property name="appId" value="wx0151679cedc88df4"/>
+        <property name="mchId" value="1499142662"/>
+        <property name="certificatePath" value="/Users/jiangcs/Downloads/apiclient_key.pem"/>
+        <property name="certificateSerialNumber" value="7EC3216D913DC72FEBA6A3FC134E801558521CA4"/>
     </bean>
     <bean id="httpHelper" class="cool.doudou.pay.assistant.core.helper.HttpHelper">
     </bean>

@@ -1,4 +1,4 @@
-package cool.doudou.pay.assistant.core;
+package cool.doudou.pay.assistant.core.enums;
 
 /**
  * PayModeEnum
