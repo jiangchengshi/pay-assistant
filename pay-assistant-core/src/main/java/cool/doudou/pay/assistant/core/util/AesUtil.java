@@ -23,7 +23,7 @@ public class AesUtil {
      * 解密
      *
      * @param aesKey            AES Key
-     * @param associatedDataStr 关联数据
+     * @param associatedDataStr 附加数据包
      * @param nonceStr          随机字符串
      * @param ciphertext        加密内容
      * @return 解密内容
