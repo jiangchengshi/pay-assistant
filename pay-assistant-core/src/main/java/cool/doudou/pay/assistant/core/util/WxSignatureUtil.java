@@ -1,9 +1,12 @@
 package cool.doudou.pay.assistant.core.util;
 
+import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
+
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -22,16 +25,30 @@ public class WxSignatureUtil {
      * @param certificateSerialNumber 商户API证书序列号
      * @param reqMethod               请求方法：GET｜POST｜PUT｜DELETE
      * @param reqAbsoluteUrl          请求地址
-     * @param reqBody                 请求数据：POST｜PUT时传入对应值，其他传入空字符串
+     * @param reqParam                请求参数
+     * @param reqBody                 请求Body数据：POST｜PUT时传入对应值，其他传入空字符串
      * @return 授权字符串
      */
-    public static String getAuthorization(String mchId, String certificateSerialNumber, String reqMethod, String reqAbsoluteUrl, String reqBody) {
+    public static String getAuthorization(String mchId, String certificateSerialNumber, ReqMethodEnum reqMethod, String reqAbsoluteUrl, Map<String, Object> reqParam, String reqBody) {
         String schema = "WECHATPAY2-SHA256-RSA2048";
         long timestamp = System.currentTimeMillis() / 1000;
         String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
 
+        StringBuilder sbParam = new StringBuilder();
+        if (reqParam != null) {
+            for (String key : reqParam.keySet()) {
+                if (sbParam.length() <= 0) {
+                    sbParam.append("?");
+                } else {
+                    sbParam.append("&");
+                }
+                sbParam.append(key).append("=").append(reqParam.get(key));
+            }
+        }
+        reqAbsoluteUrl += sbParam;
+
         // 签名值 signatureValue
-        String signatureValue = computeSignatureValue(reqMethod, reqAbsoluteUrl, reqBody, timestamp, nonceStr);
+        String signatureValue = computeSignatureValue(reqMethod.name(), reqAbsoluteUrl, reqBody, timestamp, nonceStr);
         // 签名信息 signatureInfo
         String sbSignatureInfo = "mchid=\"" + mchId + "\"," +
                 "serial_no=\"" + certificateSerialNumber + "\"," +

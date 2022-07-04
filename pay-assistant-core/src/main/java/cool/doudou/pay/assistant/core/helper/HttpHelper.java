@@ -23,7 +23,7 @@ public class HttpHelper {
      * @param url     地址
      * @param params  Url参数
      * @param headers Header参数
-     * @return
+     * @return 结果
      */
     public String doGet(String url, Map<String, Object> params, Map<String, String> headers) {
         StringBuilder sbParam = new StringBuilder();
@@ -39,11 +39,18 @@ public class HttpHelper {
         url += sbParam;
 
         Request.Builder builder = new Request.Builder();
+        builder.addHeader("Content-Type", "application/json");
+        builder.addHeader("Accept", "application/json");
         if (headers != null && headers.keySet().size() > 0) {
             headers.keySet().forEach((key) -> builder.addHeader(key, headers.get(key)));
         }
 
         Request request = builder.url(url).build();
+
+        System.out.println("url => GET " + url);
+        System.out.println("authorization => " + request.headers("Authorization"));
+        System.out.println("params => " + params);
+
         return execute(request);
     }
 
@@ -54,7 +61,7 @@ public class HttpHelper {
      * @param params   Url参数
      * @param headers  Header参数
      * @param jsonBody Json数据体
-     * @return
+     * @return 结果
      */
     public String doPostJson(String url, Map<String, Object> params, Map<String, String> headers, String jsonBody) {
         StringBuilder sbParam = new StringBuilder();
@@ -75,11 +82,13 @@ public class HttpHelper {
         if (headers != null && headers.keySet().size() > 0) {
             headers.keySet().forEach((key) -> builder.addHeader(key, headers.get(key)));
         }
-
+        if (jsonBody == null) {
+            jsonBody = "";
+        }
         RequestBody requestBody = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
         Request request = builder.url(url).post(requestBody).build();
 
-        System.out.println("url => " + url);
+        System.out.println("url => POST " + url);
         System.out.println("authorization => " + request.headers("Authorization"));
         System.out.println("params => " + params);
         System.out.println("body => " + jsonBody);
