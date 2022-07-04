@@ -1,15 +1,9 @@
 package cool.doudou.pay.assistant.core.util;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 /**
@@ -25,7 +19,7 @@ public class AesUtil {
      * @param aesKey            AES Key
      * @param associatedDataStr 附加数据包
      * @param nonceStr          随机字符串
-     * @param ciphertext        加密内容
+     * @param ciphertext        Base64加密的密文
      * @return 解密内容
      */
     public static String decrypt(String aesKey, String associatedDataStr, String nonceStr, String ciphertext) {
@@ -39,11 +33,7 @@ public class AesUtil {
             cipher.updateAAD(associatedDataStr.getBytes(StandardCharsets.UTF_8));
 
             return new String(cipher.doFinal(Base64.getDecoder().decode(ciphertext)), StandardCharsets.UTF_8);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            throw new IllegalStateException(e);
-        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

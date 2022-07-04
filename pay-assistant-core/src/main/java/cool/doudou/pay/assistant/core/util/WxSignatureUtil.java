@@ -1,7 +1,6 @@
 package cool.doudou.pay.assistant.core.util;
 
 import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
-import cool.doudou.pay.assistant.core.memory.WxPayMem;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Signature;
@@ -79,15 +78,8 @@ public class WxSignatureUtil {
                 .append(nonceStr).append("\n")
                 .append(reqBody).append("\n");
 
-        // 签名值
-        try {
-            Signature signature = Signature.getInstance("SHA256withRSA");
-            signature.initSign(WxPayMem.privateKey);
-            signature.update(sbSignatureValue.toString().getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(signature.sign());
-        } catch (Exception e) {
-            throw new RuntimeException("签名值计算异常", e);
-        }
+        // 加密
+        return RsaUtil.encrypt(sbSignatureValue.toString());
     }
 
     /**
