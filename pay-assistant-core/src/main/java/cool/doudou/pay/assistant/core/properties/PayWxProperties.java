@@ -16,4 +16,5 @@ public class PayWxProperties {
     private String mchId;
     private String certificatePath;
     private String certificateSerialNumber;
+    private String apiKeyV3;
 }

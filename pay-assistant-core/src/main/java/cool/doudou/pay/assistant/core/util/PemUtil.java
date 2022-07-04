@@ -1,5 +1,7 @@
 package cool.doudou.pay.assistant.core.util;
 
+import cool.doudou.pay.assistant.core.memory.WxPayMem;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -18,11 +20,10 @@ public class PemUtil {
      * 加载 密钥文件
      *
      * @param file 文件
-     * @return 密钥
      */
-    public static PrivateKey loadPrivateKey(File file) {
+    public static void loadPrivateKey(File file) {
         try {
-            return loadPrivateKey(new FileInputStream(file));
+            WxPayMem.privateKey = loadPrivateKey(new FileInputStream(file));
         } catch (FileNotFoundException e) {
             throw new RuntimeException("密钥文件不存在", e);
         }

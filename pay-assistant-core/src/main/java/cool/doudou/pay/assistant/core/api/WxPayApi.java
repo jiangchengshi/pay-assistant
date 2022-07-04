@@ -1,16 +1,23 @@
 package cool.doudou.pay.assistant.core.api;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import cool.doudou.pay.assistant.core.entity.PlaceOrderParam;
 import cool.doudou.pay.assistant.core.entity.RefundParam;
 import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
 import cool.doudou.pay.assistant.core.helper.HttpHelper;
+import cool.doudou.pay.assistant.core.memory.WxPayMem;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
+import cool.doudou.pay.assistant.core.util.AesUtil;
 import cool.doudou.pay.assistant.core.util.WxSignatureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,17 +36,39 @@ public class WxPayApi {
     private final String wxPayServer = "https://api.mch.weixin.qq.com";
 
     /**
-     * 平台证书
-     *
-     * @return 证书信息
+     * 加载平台证书
      */
-    public String certificate() {
+    public void loadCertificate() {
         String reqAbsoluteUrl = "/v3/certificates";
 
         Map<String, String> headers = new HashMap<>(1);
         headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.GET, reqAbsoluteUrl, null, ""));
 
-        return httpHelper.doGet(wxPayServer + reqAbsoluteUrl, null, headers);
+        String result = httpHelper.doGet(wxPayServer + reqAbsoluteUrl, null, headers);
+        JSONObject resultObj = JSONObject.parseObject(result);
+        JSONArray dataArr = resultObj.getJSONArray("data");
+        for (int i = 0, len = dataArr.size(); i < len; i++) {
+            try {
+                JSONObject dataObj = dataArr.getJSONObject(i);
+                // 证书序列号
+                String certificateSerialNumber = dataObj.getString("serial_no");
+                // 加密内容
+                JSONObject encryptCertificateObj = dataObj.getJSONObject("encrypt_certificate");
+                String nonceStr = encryptCertificateObj.getString("nonce");
+                String ciphertextStr = encryptCertificateObj.getString("ciphertext");
+                // 证书内容解密
+                String associatedDataStr = encryptCertificateObj.getString("associated_data");
+                String decryptStr = AesUtil.decrypt(payWxProperties.getApiKeyV3(), associatedDataStr, nonceStr, ciphertextStr);
+                // 证书内容转成证书对象
+                CertificateFactory cf = CertificateFactory.getInstance("X509");
+                X509Certificate x509Certificate = (X509Certificate) cf.generateCertificate(
+                        new ByteArrayInputStream(decryptStr.getBytes(StandardCharsets.UTF_8))
+                );
+                WxPayMem.certificateMap.put(certificateSerialNumber, x509Certificate);
+            } catch (Exception e) {
+                System.err.println("平台证书加载异常: " + e.getMessage());
+            }
+        }
     }
 
     /**

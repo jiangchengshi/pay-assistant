@@ -1,12 +1,14 @@
 package cool.doudou.pay.assistant.boot.starter.controller;
 
-import cool.doudou.pay.assistant.boot.starter.PayNotifyService;
-import cool.doudou.pay.assistant.core.enums.PayModeEnum;
-import cool.doudou.pay.assistant.core.factory.ConcurrentMapFactory;
+import cool.doudou.pay.assistant.boot.starter.service.PayNotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * PayNotifyController
@@ -20,12 +22,12 @@ public class PayNotifyController {
     private PayNotifyService payNotifyService;
 
     @PostMapping("wx")
-    public void wxPay(String jsonStr) {
-        payNotifyService.wxPay(jsonStr);
+    public Map<String, Object> wxPay(HttpServletRequest request, @RequestBody String jsonStr) {
+        return payNotifyService.wxPay(request, jsonStr);
     }
 
     @PostMapping("ali")
-    public void aliPay(String jsonStr) {
+    public void aliPay(@RequestBody String jsonStr) {
         payNotifyService.aliPay(jsonStr);
     }
 

@@ -1,10 +1,11 @@
 package cool.doudou.pay.assistant.core.util;
 
 import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
+import cool.doudou.pay.assistant.core.memory.WxPayMem;
 
 import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
 import java.security.Signature;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
@@ -16,8 +17,6 @@ import java.util.UUID;
  * @since 2022/07/01
  */
 public class WxSignatureUtil {
-    private static PrivateKey privateKey;
-
     /**
      * 获取 授权信息
      *
@@ -59,6 +58,16 @@ public class WxSignatureUtil {
         return schema + " " + sbSignatureInfo;
     }
 
+    /**
+     * 计算签名值
+     *
+     * @param reqMethod      请求方法
+     * @param reqAbsoluteUrl 请求Url
+     * @param reqBody        请求Body数据
+     * @param timestamp      时间戳
+     * @param nonceStr       随机字符串
+     * @return 签名值
+     */
     private static String computeSignatureValue(String reqMethod, String reqAbsoluteUrl, String reqBody, long timestamp, String nonceStr) {
         // 构造签名字符串
         StringBuilder sbSignatureValue = new StringBuilder();
@@ -73,7 +82,7 @@ public class WxSignatureUtil {
         // 签名值
         try {
             Signature signature = Signature.getInstance("SHA256withRSA");
-            signature.initSign(privateKey);
+            signature.initSign(WxPayMem.privateKey);
             signature.update(sbSignatureValue.toString().getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(signature.sign());
         } catch (Exception e) {
@@ -81,7 +90,29 @@ public class WxSignatureUtil {
         }
     }
 
-    public static void setPrivateKey(PrivateKey privateKey) {
-        WxSignatureUtil.privateKey = privateKey;
+    /**
+     * 证书验证
+     *
+     * @param certificate  平台证书
+     * @param timestamp    时间戳
+     * @param nonceStr     随机字符串
+     * @param jsonStr      请求Body数据
+     * @param signatureStr 签名字符串
+     * @return true-验证通过；false-验证失败
+     */
+    public static boolean certificateVerify(X509Certificate certificate, String timestamp, String nonceStr, String jsonStr, String signatureStr) {
+        try {
+            // 构造签名字符串
+            String sbSignatureValue = timestamp + "\n" +
+                    nonceStr + "\n" +
+                    jsonStr + "\n";
+
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initVerify(certificate);
+            signature.update(sbSignatureValue.getBytes(StandardCharsets.UTF_8));
+            return signature.verify(Base64.getDecoder().decode(signatureStr));
+        } catch (Exception e) {
+            throw new RuntimeException("证书验证异常", e);
+        }
     }
 }

@@ -7,7 +7,6 @@ import cool.doudou.pay.assistant.core.helper.HttpHelper;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
 import cool.doudou.pay.assistant.core.util.PemUtil;
-import cool.doudou.pay.assistant.core.util.WxSignatureUtil;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,17 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @since 2022/06/30
  */
 public class WxPayTest {
-    @Test
-    public void certificate() {
-        try {
-            WxPayApi wxPayApi = initContext();
-
-            assertNotNull(wxPayApi.certificate());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     public void place() {
         try {
@@ -123,11 +111,14 @@ public class WxPayTest {
         PayWxProperties payWxProperties = applicationContext.getBean("payWxProperties", PayWxProperties.class);
         wxPayApi.setPayWxProperties(payWxProperties);
 
-        WxSignatureUtil.setPrivateKey(PemUtil.loadPrivateKey(new File(payWxProperties.getCertificatePath())));
-
         HttpHelper httpHelper = applicationContext.getBean("httpHelper", HttpHelper.class);
         httpHelper.setOkHttpClient(new OkHttpClient());
         wxPayApi.setHttpHelper(httpHelper);
+
+        PemUtil.loadPrivateKey(new File(payWxProperties.getCertificatePath()));
+
+        wxPayApi.loadCertificate();
+
         return wxPayApi;
     }
 }
