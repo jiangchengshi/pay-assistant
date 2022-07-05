@@ -1,8 +1,9 @@
 package cool.doudou.pay.assistant.boot.starter.runner;
 
 import cool.doudou.pay.assistant.core.api.WxPayApi;
+import cool.doudou.pay.assistant.core.properties.PayAliProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
-import cool.doudou.pay.assistant.core.util.PemUtil;
+import cool.doudou.pay.assistant.core.util.CertificateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -20,14 +21,18 @@ import java.io.File;
 public class PayRunner implements ApplicationRunner {
     private PayWxProperties payWxProperties;
     private WxPayApi wxPayApi;
+    private PayAliProperties payAliProperties;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // 加载商户密钥文件
-        PemUtil.loadPrivateKey(new File(payWxProperties.getCertificatePath()));
+        // 加载微信商户密钥文件
+        CertificateUtil.loadWxPrivateKey(new File(payWxProperties.getCertificatePath()));
 
-        // 加载平台证书
+        // 加载微信平台证书
         wxPayApi.loadCertificate();
+
+        // 加载支付宝商户密钥文件
+        CertificateUtil.loadAliPrivateKey(new File(payAliProperties.getCertificatePath()));
     }
 
     @Autowired
@@ -38,5 +43,10 @@ public class PayRunner implements ApplicationRunner {
     @Autowired
     public void setWxPayApi(WxPayApi wxPayApi) {
         this.wxPayApi = wxPayApi;
+    }
+
+    @Autowired
+    public void setPayAliProperties(PayAliProperties payAliProperties) {
+        this.payAliProperties = payAliProperties;
     }
 }

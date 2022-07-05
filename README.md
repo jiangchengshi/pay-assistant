@@ -62,6 +62,22 @@ public class PayNotifyComponent {
 }
 ```
 
+### 其他说明
+
+> 支付宝RSA密钥字符串转换成pem文件
+
+- openssl命令生成PKCS1格式密钥文件 *.pem，文件以-----BEGIN RSA PRIVATE KEY-----开头
+
+```shell
+openssl rsa -inform PEM -in *.txt -outform PEM -out *.pem<br>
+```
+
+- openssl命令转换成PKCS8格式密钥文件 *.pem，文件以-----BEGIN PRIVATE KEY-----开头
+
+```shell
+openssl pkcs8 -topk8 -inform PEM -in *.pem -outform PEM -out *_pkcs8.pem -nocrypt
+```
+
 ## 版权
 
 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)

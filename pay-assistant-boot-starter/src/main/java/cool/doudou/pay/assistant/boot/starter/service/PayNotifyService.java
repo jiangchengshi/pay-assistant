@@ -5,8 +5,8 @@ import cool.doudou.pay.assistant.core.enums.PayModeEnum;
 import cool.doudou.pay.assistant.core.factory.ConcurrentMapFactory;
 import cool.doudou.pay.assistant.core.memory.WxPayMem;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
+import cool.doudou.pay.assistant.core.signer.WxSigner;
 import cool.doudou.pay.assistant.core.util.AesUtil;
-import cool.doudou.pay.assistant.core.util.WxSignatureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class PayNotifyService {
             String signature = request.getHeader("Wechatpay-Signature");
             String serial = request.getHeader("Wechatpay-Serial");
             X509Certificate x509Certificate = WxPayMem.certificateMap.get(serial);
-            boolean verifyFlag = WxSignatureUtil.certificateVerify(x509Certificate, timestamp, nonce, jsonStr, signature);
+            boolean verifyFlag = WxSigner.certificateVerify(x509Certificate, timestamp, nonce, jsonStr, signature);
             if (!verifyFlag) {
                 throw new RuntimeException("签名验证失败");
             }

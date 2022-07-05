@@ -13,4 +13,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "pay.ali")
 public class PayAliProperties {
     private String appId;
+    private String certificatePath;
 }

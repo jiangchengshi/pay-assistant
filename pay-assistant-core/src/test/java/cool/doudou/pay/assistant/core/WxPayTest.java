@@ -6,7 +6,7 @@ import cool.doudou.pay.assistant.core.entity.RefundParam;
 import cool.doudou.pay.assistant.core.helper.HttpHelper;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
-import cool.doudou.pay.assistant.core.util.PemUtil;
+import cool.doudou.pay.assistant.core.util.CertificateUtil;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -34,7 +34,7 @@ public class WxPayTest {
             placeOrderParam.setTimeExpire("2022-07-02T16:10:00+08:00");
             placeOrderParam.setAttach("订单测试");
             placeOrderParam.setMoney(BigDecimal.valueOf(200));
-            placeOrderParam.setOpenId("o4GgauInH_RCEdvrrNGrntXDuXXX");
+            placeOrderParam.setUid("o4GgauInH_RCEdvrrNGrntXDuXXX");
 
             assertNotNull(wxPayApi.place(placeOrderParam));
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class WxPayTest {
         try {
             WxPayApi wxPayApi = initContext();
 
-            assertNotNull(wxPayApi.downloadBill("https://api.mch.weixin.qq.com/v3/billdownload/file?token=xxx"));
+            assertNotNull(wxPayApi.downloadBill("https://api.mch.weixin.qq.com/v3/billdownload/file?token=6XIv5TUPto7pByrTQKhd6kwvyKLG2uY2wMMR8cNXqaA_Cv_isgaUtBzp4QtiozLO"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,7 +115,7 @@ public class WxPayTest {
         httpHelper.setOkHttpClient(new OkHttpClient());
         wxPayApi.setHttpHelper(httpHelper);
 
-        PemUtil.loadPrivateKey(new File(payWxProperties.getCertificatePath()));
+        CertificateUtil.loadWxPrivateKey(new File(payWxProperties.getCertificatePath()));
 
         wxPayApi.loadCertificate();
 

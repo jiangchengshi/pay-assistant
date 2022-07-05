@@ -4,15 +4,14 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import cool.doudou.pay.assistant.core.entity.PlaceOrderParam;
 import cool.doudou.pay.assistant.core.entity.RefundParam;
-import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
 import cool.doudou.pay.assistant.core.helper.HttpHelper;
 import cool.doudou.pay.assistant.core.memory.WxPayMem;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
 import cool.doudou.pay.assistant.core.util.AesUtil;
-import cool.doudou.pay.assistant.core.util.WxSignatureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +32,7 @@ public class WxPayApi {
     private PayWxProperties payWxProperties;
     private HttpHelper httpHelper;
 
-    private final String wxPayServer = "https://api.mch.weixin.qq.com";
+    private final String serverAddress = "https://api.mch.weixin.qq.com";
 
     /**
      * 加载平台证书
@@ -41,32 +40,31 @@ public class WxPayApi {
     public void loadCertificate() {
         String reqAbsoluteUrl = "/v3/certificates";
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.GET, reqAbsoluteUrl, null, ""));
-
-        String result = httpHelper.doGet(wxPayServer + reqAbsoluteUrl, null, headers);
-        JSONObject resultObj = JSONObject.parseObject(result);
-        JSONArray dataArr = resultObj.getJSONArray("data");
-        for (int i = 0, len = dataArr.size(); i < len; i++) {
-            try {
-                JSONObject dataObj = dataArr.getJSONObject(i);
-                // 证书序列号
-                String certificateSerialNumber = dataObj.getString("serial_no");
-                // 加密内容
-                JSONObject encryptCertificateObj = dataObj.getJSONObject("encrypt_certificate");
-                String nonceStr = encryptCertificateObj.getString("nonce");
-                String ciphertextStr = encryptCertificateObj.getString("ciphertext");
-                // 证书内容解密
-                String associatedDataStr = encryptCertificateObj.getString("associated_data");
-                String decryptStr = AesUtil.decrypt(payWxProperties.getApiKeyV3(), associatedDataStr, nonceStr, ciphertextStr);
-                // 证书内容转成证书对象
-                CertificateFactory cf = CertificateFactory.getInstance("X509");
-                X509Certificate x509Certificate = (X509Certificate) cf.generateCertificate(
-                        new ByteArrayInputStream(decryptStr.getBytes(StandardCharsets.UTF_8))
-                );
-                WxPayMem.certificateMap.put(certificateSerialNumber, x509Certificate);
-            } catch (Exception e) {
-                System.err.println("平台证书加载异常: " + e.getMessage());
+        String result = httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, null, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        if (!ObjectUtils.isEmpty(result)) {
+            JSONObject resultObj = JSONObject.parseObject(result);
+            JSONArray dataArr = resultObj.getJSONArray("data");
+            for (int i = 0, len = dataArr.size(); i < len; i++) {
+                try {
+                    JSONObject dataObj = dataArr.getJSONObject(i);
+                    // 证书序列号
+                    String certificateSerialNumber = dataObj.getString("serial_no");
+                    // 加密内容
+                    JSONObject encryptCertificateObj = dataObj.getJSONObject("encrypt_certificate");
+                    String nonceStr = encryptCertificateObj.getString("nonce");
+                    String ciphertextStr = encryptCertificateObj.getString("ciphertext");
+                    // 证书内容解密
+                    String associatedDataStr = encryptCertificateObj.getString("associated_data");
+                    String decryptStr = AesUtil.decrypt(payWxProperties.getApiKeyV3(), associatedDataStr, nonceStr, ciphertextStr);
+                    // 证书内容转成证书对象
+                    CertificateFactory cf = CertificateFactory.getInstance("X509");
+                    X509Certificate x509Certificate = (X509Certificate) cf.generateCertificate(
+                            new ByteArrayInputStream(decryptStr.getBytes(StandardCharsets.UTF_8))
+                    );
+                    WxPayMem.certificateMap.put(certificateSerialNumber, x509Certificate);
+                } catch (Exception e) {
+                    System.err.println("平台证书加载异常: " + e.getMessage());
+                }
             }
         }
     }
@@ -88,7 +86,7 @@ public class WxPayApi {
             throw new RuntimeException("商户订单号长度不能多于32位");
         }
 
-        if (placeOrderParam.getTimeExpire() != null && !placeOrderParam.getTimeExpire().isBlank() && (!placeOrderParam.getTimeExpire().contains("T") || !placeOrderParam.getTimeExpire().contains("+"))) {
+        if (!ObjectUtils.isEmpty(placeOrderParam.getTimeExpire()) && (!placeOrderParam.getTimeExpire().contains("T") || !placeOrderParam.getTimeExpire().contains("+"))) {
             throw new RuntimeException("交易结束时间格式错误");
         }
 
@@ -97,23 +95,24 @@ public class WxPayApi {
         jsonObject.put("mchid", payWxProperties.getMchId());
         jsonObject.put("out_trade_no", placeOrderParam.getOutTradeNo());
         jsonObject.put("description", placeOrderParam.getDescription());
-        jsonObject.put("time_expire", placeOrderParam.getTimeExpire());
-        jsonObject.put("attach", placeOrderParam.getAttach());
+        if (!ObjectUtils.isEmpty(placeOrderParam.getTimeExpire())) {
+            jsonObject.put("time_expire", placeOrderParam.getTimeExpire());
+        }
+        if (!ObjectUtils.isEmpty(placeOrderParam.getAttach())) {
+            jsonObject.put("attach", placeOrderParam.getAttach());
+        }
         jsonObject.put("notify_url", payProperties.getNotifyServer() + "/pay-notify/wx");
         JSONObject jsonAmount = new JSONObject();
         jsonAmount.put("total", placeOrderParam.getMoney());
         jsonAmount.put("currency", "CNY");
         jsonObject.put("amount", jsonAmount);
         JSONObject jsonPayer = new JSONObject();
-        jsonPayer.put("openid", placeOrderParam.getOpenId());
+        jsonPayer.put("openid", placeOrderParam.getUid());
         jsonObject.put("payer", jsonPayer);
 
         String reqAbsoluteUrl = "/v3/pay/transactions/jsapi";
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.POST, reqAbsoluteUrl, null, jsonObject.toString()));
-
-        return httpHelper.doPostJson(wxPayServer + reqAbsoluteUrl, null, headers, jsonObject.toJSONString());
+        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
     }
 
     /**
@@ -128,10 +127,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/pay/transactions/out-trade-no/" + outTradeNo;
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.GET, reqAbsoluteUrl, params, ""));
-
-        return httpHelper.doGet(wxPayServer + reqAbsoluteUrl, params, headers);
+        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
     }
 
     /**
@@ -146,10 +142,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/pay/transactions/out-trade-no/" + outTradeNo + "/close";
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.POST, reqAbsoluteUrl, null, jsonObject.toString()));
-
-        return httpHelper.doPostJson(wxPayServer + reqAbsoluteUrl, null, headers, jsonObject.toString());
+        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
     }
 
     /**
@@ -171,10 +164,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/refund/domestic/refunds";
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.POST, reqAbsoluteUrl, null, jsonObject.toString()));
-
-        return httpHelper.doPostJson(wxPayServer + reqAbsoluteUrl, null, headers, jsonObject.toJSONString());
+        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
     }
 
     /**
@@ -189,10 +179,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/bill/tradebill";
 
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.GET, reqAbsoluteUrl, params, ""));
-
-        return httpHelper.doGet(wxPayServer + reqAbsoluteUrl, params, headers);
+        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
     }
 
     /**
@@ -202,10 +189,14 @@ public class WxPayApi {
      * @return 账单信息
      */
     public String downloadBill(String billUrl) {
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", WxSignatureUtil.getAuthorization(payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber(), ReqMethodEnum.GET, billUrl, null, ""));
+        String[] billUrlArr = billUrl.split("\\?");
+        String reqAbsoluteUrl = billUrlArr[0].replace(serverAddress, "");
 
-        return httpHelper.doGet(billUrl, null, headers);
+        String[] paramArr = billUrlArr[1].split("=");
+        Map<String, Object> params = new HashMap<>(1);
+        params.put(paramArr[0], paramArr[1]);
+
+        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
     }
 
     @Autowired

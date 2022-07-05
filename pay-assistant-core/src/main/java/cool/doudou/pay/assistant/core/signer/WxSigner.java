@@ -1,6 +1,8 @@
-package cool.doudou.pay.assistant.core.util;
+package cool.doudou.pay.assistant.core.signer;
 
 import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
+import cool.doudou.pay.assistant.core.memory.WxPayMem;
+import cool.doudou.pay.assistant.core.util.RsaUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Signature;
@@ -10,12 +12,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * WxSignatureUtil
+ * 微信签名者
  *
  * @author jiangcs
  * @since 2022/07/01
  */
-public class WxSignatureUtil {
+public class WxSigner {
     /**
      * 获取 授权信息
      *
@@ -69,17 +71,17 @@ public class WxSignatureUtil {
      */
     private static String computeSignatureValue(String reqMethod, String reqAbsoluteUrl, String reqBody, long timestamp, String nonceStr) {
         // 构造签名字符串
-        StringBuilder sbSignatureValue = new StringBuilder();
-        sbSignatureValue.append(reqMethod).append("\n")
-                .append(reqAbsoluteUrl).append("\n")
-                // 时间戳
-                .append(timestamp).append("\n")
-                // 随机串
-                .append(nonceStr).append("\n")
-                .append(reqBody).append("\n");
+        String sbSignatureValue = reqMethod + "\n" +
+                reqAbsoluteUrl + "\n" +
+                timestamp + "\n" +
+                nonceStr + "\n" +
+                reqBody + "\n";
 
         // 加密
-        return RsaUtil.encrypt(sbSignatureValue.toString());
+        byte[] encryptArr = RsaUtil.encrypt(sbSignatureValue, WxPayMem.privateKey);
+
+        // Base64
+        return Base64.getEncoder().encodeToString(encryptArr);
     }
 
     /**

@@ -1,5 +1,6 @@
 package cool.doudou.pay.assistant.core.util;
 
+import cool.doudou.pay.assistant.core.memory.AliPayMem;
 import cool.doudou.pay.assistant.core.memory.WxPayMem;
 
 import java.io.*;
@@ -10,20 +11,33 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
 /**
- * PemUtil
+ * CertificateUtil
  *
  * @author jiangcs
  * @since 2022/07/02
  */
-public class PemUtil {
+public class CertificateUtil {
     /**
-     * 加载 密钥文件
+     * 加载 密钥文件  wx
      *
      * @param file 文件
      */
-    public static void loadPrivateKey(File file) {
+    public static void loadWxPrivateKey(File file) {
         try {
             WxPayMem.privateKey = loadPrivateKey(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("密钥文件不存在", e);
+        }
+    }
+
+    /**
+     * 加载 密钥文件 ali
+     *
+     * @param file 文件
+     */
+    public static void loadAliPrivateKey(File file) {
+        try {
+            AliPayMem.privateKey = loadPrivateKey(new FileInputStream(file));
         } catch (FileNotFoundException e) {
             throw new RuntimeException("密钥文件不存在", e);
         }
