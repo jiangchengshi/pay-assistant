@@ -37,7 +37,7 @@ public class RsaUtil {
      * @param ciphertext   密文
      * @param publicKey    公钥
      * @param signatureStr 待验证字符串
-     * @return
+     * @return true-成功；false-失败
      */
     public static boolean verify(String ciphertext, PublicKey publicKey, String signatureStr) {
         // 签名值

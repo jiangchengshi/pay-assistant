@@ -70,12 +70,12 @@ public class HttpHelper {
     /**
      * getInputStream 请求 微信
      *
-     * @param serverAddress
-     * @param reqAbsoluteUrl
-     * @param params
-     * @param mchId
-     * @param privateKeySerialNumber
-     * @return
+     * @param serverAddress          服务器地址
+     * @param reqAbsoluteUrl         请求API地址
+     * @param params                 Query参数
+     * @param mchId                  商户ID
+     * @param privateKeySerialNumber 商户密钥证书序列号
+     * @return 字节数组输入流
      */
     public ByteArrayInputStream doGetInputStream4Wx(String serverAddress, String reqAbsoluteUrl, Map<String, Object> params, String mchId, String privateKeySerialNumber) {
         String url = serverAddress + reqAbsoluteUrl;
