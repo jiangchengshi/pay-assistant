@@ -1,11 +1,11 @@
 package cool.doudou.pay.assistant.core.enums;
 
 /**
- * ReqMethodEnum
+ * RestfulMethodEnum
  *
  * @author jiangcs
  * @since 2022/07/04
  */
-public enum ReqMethodEnum {
+public enum RestfulMethodEnum {
     GET, POST
 }

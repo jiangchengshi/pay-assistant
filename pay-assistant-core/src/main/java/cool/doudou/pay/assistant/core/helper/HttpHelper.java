@@ -1,14 +1,18 @@
 package cool.doudou.pay.assistant.core.helper;
 
 import com.alibaba.fastjson2.JSONObject;
-import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
+import cool.doudou.pay.assistant.core.enums.RestfulMethodEnum;
+import cool.doudou.pay.assistant.core.signer.AliSigner;
 import cool.doudou.pay.assistant.core.signer.WxSigner;
+import cool.doudou.pay.assistant.core.util.ComUtil;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,7 +43,7 @@ public class HttpHelper {
         // Header
         builder.addHeader("Content-Type", "application/json");
         builder.addHeader("Accept", "application/json");
-        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, certificateSerialNumber, ReqMethodEnum.GET, reqAbsoluteUrl, params, ""));
+        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, certificateSerialNumber, RestfulMethodEnum.GET, reqAbsoluteUrl, params, ""));
         // Query
         StringBuilder sbParam = new StringBuilder();
         if (params != null && params.keySet().size() > 0) {
@@ -77,7 +81,7 @@ public class HttpHelper {
 
         Request.Builder builder = new Request.Builder();
         // Header
-        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, certificateSerialNumber, ReqMethodEnum.POST, reqAbsoluteUrl, null, jsonBody));
+        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, certificateSerialNumber, RestfulMethodEnum.POST, reqAbsoluteUrl, null, jsonBody));
         // Body
         if (jsonBody == null) {
             jsonBody = "";
@@ -96,33 +100,43 @@ public class HttpHelper {
     /**
      * Post 请求 支付宝
      *
-     * @param url            网关地址
-     * @param publicParamMap 公共参数
-     * @param bizParamMap    业务参数
+     * @param url                 网关地址
+     * @param method              接口名称
+     * @param params              业务参数
+     * @param appId               应用ID
+     * @param notifyServerAddress 异步通知服务地址
      * @return 结果
      */
-    public String doPost4Ali(String url, Map<String, String> publicParamMap, Map<String, String> bizParamMap) {
-        Request.Builder builder = new Request.Builder();
+    public String doPost4Ali(String url, String method, Map<String, String> params, String appId, String notifyServerAddress) {
+        // 公共参数
+        Map<String, String> publicParamMap = new HashMap<>(8);
+        publicParamMap.put("app_id", appId);
+        publicParamMap.put("method", method);
+        publicParamMap.put("charset", "utf-8");
+        publicParamMap.put("sign_type", "RSA2");
+        publicParamMap.put("timestamp", ComUtil.formatDate(new Date()));
+        publicParamMap.put("version", "1.0");
+        publicParamMap.put("notify_url", notifyServerAddress + "/pay-notify/ali");
+        // 签名
+        publicParamMap.put("sign", AliSigner.getSign(publicParamMap, params));
 
+        Request.Builder builder = new Request.Builder();
         // Query
         StringBuilder sbPublicParam = new StringBuilder();
-        if (publicParamMap != null && publicParamMap.keySet().size() > 0) {
-            for (String key : publicParamMap.keySet()) {
-                if (sbPublicParam.length() <= 0) {
-                    sbPublicParam.append("?");
-                } else {
-                    sbPublicParam.append("&");
-                }
-                sbPublicParam.append(key).append("=").append(URLEncoder.encode(publicParamMap.get(key), StandardCharsets.UTF_8));
+        for (String key : publicParamMap.keySet()) {
+            if (sbPublicParam.length() <= 0) {
+                sbPublicParam.append("?");
+            } else {
+                sbPublicParam.append("&");
             }
+            sbPublicParam.append(key).append("=").append(URLEncoder.encode(publicParamMap.get(key), StandardCharsets.UTF_8));
         }
         url += sbPublicParam;
-
         // Body
         FormBody.Builder formBuilder = new FormBody.Builder();
-        if (bizParamMap != null && bizParamMap.keySet().size() > 0) {
-            for (String key : bizParamMap.keySet()) {
-                formBuilder.add(key, bizParamMap.get(key));
+        if (params != null && params.keySet().size() > 0) {
+            for (String key : params.keySet()) {
+                formBuilder.add(key, params.get(key));
             }
         }
         RequestBody requestBody = formBuilder.build();
@@ -130,8 +144,8 @@ public class HttpHelper {
 
         System.out.println("===========HTTP START==========");
         System.out.println("url => POST[ali] " + url);
+        System.out.println("params => " + JSONObject.toJSONString(params));
         System.out.println("public-params => " + JSONObject.toJSONString(publicParamMap));
-        System.out.println("biz-params => " + JSONObject.toJSONString(bizParamMap));
 
         return execute(request);
     }

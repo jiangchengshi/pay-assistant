@@ -1,6 +1,7 @@
 package cool.doudou.pay.assistant.core.memory;
 
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * AliPayMem
@@ -10,4 +11,5 @@ import java.security.PrivateKey;
  */
 public class AliPayMem {
     public static PrivateKey privateKey;
+    public static PublicKey publicKey;
 }

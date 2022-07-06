@@ -4,6 +4,8 @@ import cool.doudou.pay.assistant.core.memory.AliPayMem;
 import cool.doudou.pay.assistant.core.util.ComUtil;
 import cool.doudou.pay.assistant.core.util.RsaUtil;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -42,6 +44,7 @@ public class AliSigner {
      * @return 签名值
      */
     private static String computeSignatureValue(List<String> keyList, Map<String, String> paramMap) {
+        // 拼接参数
         StringBuilder sbSignatureValue = new StringBuilder();
         for (String key : keyList) {
             if (sbSignatureValue.length() > 0) {
@@ -55,5 +58,33 @@ public class AliSigner {
 
         // Base64
         return Base64.getEncoder().encodeToString(encryptArr);
+    }
+
+    /**
+     * 验证
+     *
+     * @param paramMap     参数
+     * @param signatureStr 待验证字符串
+     * @return true-成功；false-失败
+     */
+    public static boolean verify(Map<String, String> paramMap, String signatureStr) {
+        // 参数Key
+        paramMap.forEach((key, value) -> value = URLDecoder.decode(value, StandardCharsets.UTF_8));
+        List<String> keyList = new ArrayList<>(paramMap.keySet());
+
+        // 参数Key排序
+        ComUtil.asciiSortAsc(keyList);
+
+        // 拼接参数
+        StringBuilder sbSignatureValue = new StringBuilder();
+        for (String key : keyList) {
+            if (sbSignatureValue.length() > 0) {
+                sbSignatureValue.append("&");
+            }
+            sbSignatureValue.append(key).append("=").append(paramMap.get(key));
+        }
+
+        // 验签
+        return RsaUtil.verify(sbSignatureValue.toString(), AliPayMem.publicKey, signatureStr);
     }
 }

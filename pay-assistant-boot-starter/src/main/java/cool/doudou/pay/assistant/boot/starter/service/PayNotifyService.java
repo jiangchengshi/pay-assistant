@@ -1,18 +1,21 @@
 package cool.doudou.pay.assistant.boot.starter.service;
 
 import com.alibaba.fastjson2.JSONObject;
+import cool.doudou.pay.assistant.boot.starter.util.RespUtil;
 import cool.doudou.pay.assistant.core.enums.PayModeEnum;
 import cool.doudou.pay.assistant.core.factory.ConcurrentMapFactory;
 import cool.doudou.pay.assistant.core.memory.WxPayMem;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
+import cool.doudou.pay.assistant.core.signer.AliSigner;
 import cool.doudou.pay.assistant.core.signer.WxSigner;
 import cool.doudou.pay.assistant.core.util.AesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
+import java.util.Base64;
 import java.util.Map;
 
 /**
@@ -25,16 +28,21 @@ import java.util.Map;
 public class PayNotifyService {
     private PayWxProperties payWxProperties;
 
-    public Map<String, Object> wxPay(HttpServletRequest request, String jsonStr) {
-        Map<String, Object> map = new HashMap<>(2);
-
+    /**
+     * 微信支付通知
+     *
+     * @param jsonStr  通知参数
+     * @param request  请求句柄
+     * @param response 响应句柄
+     */
+    public void wxPay(String jsonStr, HttpServletRequest request, HttpServletResponse response) {
         try {
             String timestamp = request.getHeader("Wechatpay-Timestamp");
             String nonce = request.getHeader("Wechatpay-Nonce");
             String signature = request.getHeader("Wechatpay-Signature");
             String serial = request.getHeader("Wechatpay-Serial");
             X509Certificate x509Certificate = WxPayMem.certificateMap.get(serial);
-            boolean verifyFlag = WxSigner.certificateVerify(x509Certificate, timestamp, nonce, jsonStr, signature);
+            boolean verifyFlag = WxSigner.verify(x509Certificate, timestamp, nonce, jsonStr, signature);
             if (!verifyFlag) {
                 throw new RuntimeException("签名验证失败");
             }
@@ -48,17 +56,43 @@ public class PayNotifyService {
 
             ConcurrentMapFactory.get(PayModeEnum.WX).accept(decryptStr);
 
-            map.put("code", "SUCCESS");
-            map.put("message", "ok");
+            RespUtil.writeSuccess(response, "");
         } catch (Exception e) {
-            map.put("code", "FAIL");
-            map.put("message", e.getMessage());
+            e.printStackTrace();
+
+            JSONObject resultObj = new JSONObject();
+            resultObj.put("code", "FAIL");
+            resultObj.put("message", e.getMessage());
+            RespUtil.writeFail(response, resultObj.toJSONString());
         }
-        return map;
     }
 
-    public void aliPay(String jsonStr) {
-        ConcurrentMapFactory.get(PayModeEnum.ALI).accept(jsonStr);
+    /**
+     * 支付宝支付通知
+     *
+     * @param request  请求句柄
+     * @param response 响应句柄
+     */
+    public void aliPay(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Map<String, String> paramMap = request.getParameterMap();
+            // 除去 sign、sign_type 两个参数
+            String signatureStr = new String(Base64.getDecoder().decode(paramMap.remove("sign")));
+            paramMap.remove("sign_type");
+
+            boolean verifyFlag = AliSigner.verify(paramMap, signatureStr);
+            if (!verifyFlag) {
+                throw new RuntimeException("签名验证失败");
+            }
+
+            ConcurrentMapFactory.get(PayModeEnum.ALI).accept(JSONObject.toJSONString(paramMap));
+
+            RespUtil.writeSuccess(response, "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            RespUtil.writeFail(response, "fail");
+        }
     }
 
     @Autowired

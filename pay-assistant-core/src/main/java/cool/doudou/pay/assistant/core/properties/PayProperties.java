@@ -13,5 +13,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "pay")
 public class PayProperties {
     private String[] modes;
-    private String notifyServer;
+    private String notifyServerAddress;
 }

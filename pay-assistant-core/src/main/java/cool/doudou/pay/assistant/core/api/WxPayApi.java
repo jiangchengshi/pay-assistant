@@ -37,10 +37,10 @@ public class WxPayApi {
     /**
      * 加载平台证书
      */
-    public void loadCertificate() {
+    public void loadPlatformCertificate() {
         String reqAbsoluteUrl = "/v3/certificates";
 
-        String result = httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, null, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        String result = httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, null, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
         if (!ObjectUtils.isEmpty(result)) {
             JSONObject resultObj = JSONObject.parseObject(result);
             JSONArray dataArr = resultObj.getJSONArray("data");
@@ -76,7 +76,7 @@ public class WxPayApi {
      * @return 预支付交易会话标识
      */
     public String place(PlaceOrderParam placeOrderParam) {
-        if (placeOrderParam.getOutTradeNo() != null && placeOrderParam.getOutTradeNo().isBlank()) {
+        if (ObjectUtils.isEmpty(placeOrderParam.getOutTradeNo())) {
             throw new RuntimeException("商户订单号不能为空");
         }
         if (placeOrderParam.getOutTradeNo().length() < 6) {
@@ -101,7 +101,7 @@ public class WxPayApi {
         if (!ObjectUtils.isEmpty(placeOrderParam.getAttach())) {
             jsonObject.put("attach", placeOrderParam.getAttach());
         }
-        jsonObject.put("notify_url", payProperties.getNotifyServer() + "/pay-notify/wx");
+        jsonObject.put("notify_url", payProperties.getNotifyServerAddress() + "/pay-notify/wx");
         JSONObject jsonAmount = new JSONObject();
         jsonAmount.put("total", placeOrderParam.getMoney());
         jsonAmount.put("currency", "CNY");
@@ -112,7 +112,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/pay/transactions/jsapi";
 
-        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -122,12 +122,16 @@ public class WxPayApi {
      * @return 订单信息
      */
     public String query(String outTradeNo) {
+        if (ObjectUtils.isEmpty(outTradeNo)) {
+            throw new RuntimeException("商户订单号不能为空");
+        }
+
         Map<String, Object> params = new HashMap<>(1);
         params.put("mchid", payWxProperties.getMchId());
 
         String reqAbsoluteUrl = "/v3/pay/transactions/out-trade-no/" + outTradeNo;
 
-        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -137,12 +141,16 @@ public class WxPayApi {
      * @return 无内容
      */
     public String close(String outTradeNo) {
+        if (ObjectUtils.isEmpty(outTradeNo)) {
+            throw new RuntimeException("商户订单号不能为空");
+        }
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("mchid", payWxProperties.getMchId());
 
         String reqAbsoluteUrl = "/v3/pay/transactions/out-trade-no/" + outTradeNo + "/close";
 
-        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -152,6 +160,10 @@ public class WxPayApi {
      * @return 退款信息
      */
     public String refund(RefundParam refundParam) {
+        if (ObjectUtils.isEmpty(refundParam.getOutTradeNo())) {
+            throw new RuntimeException("商户订单号不能为空");
+        }
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("out_trade_no", refundParam.getOutTradeNo());
         jsonObject.put("out_refund_no", refundParam.getOutRefundNo());
@@ -164,7 +176,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/refund/domestic/refunds";
 
-        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -174,12 +186,16 @@ public class WxPayApi {
      * @return 账单下载地址
      */
     public String tradeBill(String billDate) {
+        if (ObjectUtils.isEmpty(billDate)) {
+            throw new RuntimeException("账单日期不能为空");
+        }
+
         Map<String, Object> params = new HashMap<>(1);
         params.put("bill_date", billDate);
 
         String reqAbsoluteUrl = "/v3/bill/tradebill";
 
-        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -190,13 +206,20 @@ public class WxPayApi {
      */
     public String downloadBill(String billUrl) {
         String[] billUrlArr = billUrl.split("\\?");
+        if (billUrlArr.length != 2) {
+            throw new RuntimeException("账单地址格式错误");
+        }
+
         String reqAbsoluteUrl = billUrlArr[0].replace(serverAddress, "");
 
         String[] paramArr = billUrlArr[1].split("=");
+        if (paramArr.length != 2) {
+            throw new RuntimeException("账单地址参数格式错误");
+        }
         Map<String, Object> params = new HashMap<>(1);
         params.put(paramArr[0], paramArr[1]);
 
-        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getCertificateSerialNumber());
+        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     @Autowired

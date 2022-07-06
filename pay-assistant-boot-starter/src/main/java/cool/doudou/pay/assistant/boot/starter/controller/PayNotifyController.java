@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * PayNotifyController
@@ -22,13 +22,13 @@ public class PayNotifyController {
     private PayNotifyService payNotifyService;
 
     @PostMapping("wx")
-    public Map<String, Object> wxPay(HttpServletRequest request, @RequestBody String jsonStr) {
-        return payNotifyService.wxPay(request, jsonStr);
+    public void wxPay(@RequestBody String jsonStr, HttpServletRequest request, HttpServletResponse response) {
+        payNotifyService.wxPay(jsonStr, request, response);
     }
 
     @PostMapping("ali")
-    public void aliPay(@RequestBody String jsonStr) {
-        payNotifyService.aliPay(jsonStr);
+    public void aliPay(HttpServletRequest request, HttpServletResponse response) {
+        payNotifyService.aliPay(request, response);
     }
 
     @Autowired

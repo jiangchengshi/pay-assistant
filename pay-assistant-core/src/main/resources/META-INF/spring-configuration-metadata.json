@@ -17,18 +17,58 @@
       ]
     },
     {
+      "name": "pay.nofify-server-address",
+      "type": "java.lang.String",
+      "description": "通知服务地址",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayProperties"
+    },
+    {
       "name": "pay.wx.app-id",
       "type": "java.lang.String",
-      "description": "appId",
-      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties",
-      "defaultValue": ""
+      "description": "微信应用ID",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
+    },
+    {
+      "name": "pay.wx.mch-id",
+      "type": "java.lang.String",
+      "description": "微信商户ID",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
+    },
+    {
+      "name": "pay.wx.private-key-path",
+      "type": "java.lang.String",
+      "description": "微信密钥路径",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
+    },
+    {
+      "name": "pay.wx.private-key-serial-number",
+      "type": "java.lang.String",
+      "description": "微信密钥证书序列号",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
+    },
+    {
+      "name": "pay.wx.api-key-v3",
+      "type": "java.lang.String",
+      "description": "微信APIv3密钥",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
     },
     {
       "name": "pay.ali.app-id",
       "type": "java.lang.String",
-      "description": "appId",
-      "sourceType": "cool.doudou.pay.assistant.core.properties.PayAliProperties",
-      "defaultValue": ""
+      "description": "支付宝应用ID",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayAliProperties"
+    },
+    {
+      "name": "pay.ali.private-key-path",
+      "type": "java.lang.String",
+      "description": "支付宝密钥路径",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayAliProperties"
+    },
+    {
+      "name": "pay.ali.public-key-path",
+      "type": "java.lang.String",
+      "description": "支付宝公钥路径",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayAliProperties"
     }
   ],
   "hints": [

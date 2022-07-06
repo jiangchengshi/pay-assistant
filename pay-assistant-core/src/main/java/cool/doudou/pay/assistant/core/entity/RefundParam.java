@@ -20,22 +20,22 @@ public class RefundParam {
     private String outTradeNo;
     /**
      * wx: 商户退款单号 => 商户系统内部唯一，只能是数字、大小写字母_-|*@
-     * ali:
+     * ali: 退款请求号(out_request_no) => 标识一次退款请求，需要保证在交易号下唯一
      */
     private String outRefundNo;
     /**
      * wx: 退款原因
-     * ali:
+     * ali: 退款原因(refund_reason)
      */
     private String reason;
     /**
      * wx: 总金额，单位为分
-     * ali: 总金额，单位为元 => 精确到小数点后两位，取值范围：[0.01,100000000]
+     * ali: 无
      */
     private BigDecimal money;
     /**
      * wx: 退款金额，单位为分
-     * ali:
+     * ali: 退款金额，单位为元(refund_amount)
      */
     private BigDecimal refundMoney;
 }

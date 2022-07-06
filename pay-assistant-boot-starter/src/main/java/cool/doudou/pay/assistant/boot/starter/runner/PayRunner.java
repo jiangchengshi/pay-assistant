@@ -9,8 +9,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-
 /**
  * PayRunner
  *
@@ -26,13 +24,13 @@ public class PayRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         // 加载微信商户密钥文件
-        CertificateUtil.loadWxPrivateKey(new File(payWxProperties.getCertificatePath()));
+        CertificateUtil.loadWxSecretKey(payWxProperties.getPrivateKeyPath());
 
         // 加载微信平台证书
-        wxPayApi.loadCertificate();
+        wxPayApi.loadPlatformCertificate();
 
         // 加载支付宝商户密钥文件
-        CertificateUtil.loadAliPrivateKey(new File(payAliProperties.getCertificatePath()));
+        CertificateUtil.loadAliSecretKey(payAliProperties.getPrivateKeyPath(), payAliProperties.getPublicKeyPath());
     }
 
     @Autowired

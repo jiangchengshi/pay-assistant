@@ -4,18 +4,19 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="payProperties" class="cool.doudou.pay.assistant.core.properties.PayProperties">
         <property name="modes" value="wx,ali"/>
-        <property name="notifyServer" value="http://dev.hems.chaobiao.qdhlm.cn"/>
+        <property name="notifyServerAddress" value="http://dev.hems.chaobiao.qdhlm.cn"/>
     </bean>
     <bean id="payWxProperties" class="cool.doudou.pay.assistant.core.properties.PayWxProperties">
         <property name="appId" value="wx77b2dd44b7ef65a8"/>
         <property name="mchId" value="1499142662"/>
-        <property name="certificatePath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_key.pem"/>
-        <property name="certificateSerialNumber" value="381B87375464C46CC6AC104CFB570DA982C17148"/>
+        <property name="privateKeyPath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_key.pem"/>
+        <property name="privateKeySerialNumber" value="381B87375464C46CC6AC104CFB570DA982C17148"/>
         <property name="apiKeyV3" value="qingdaohailongmadianzi2022070200"/>
     </bean>
     <bean id="payAliProperties" class="cool.doudou.pay.assistant.core.properties.PayAliProperties">
         <property name="appId" value="2021000121616191"/>
-        <property name="certificatePath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_key_ali.pem"/>
+        <property name="privateKeyPath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_key_ali.pem"/>
+        <property name="publicKeyPath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_pub_key_ali.pem"/>
     </bean>
     <bean id="httpHelper" class="cool.doudou.pay.assistant.core.helper.HttpHelper">
     </bean>

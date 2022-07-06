@@ -1,6 +1,6 @@
 package cool.doudou.pay.assistant.core.signer;
 
-import cool.doudou.pay.assistant.core.enums.ReqMethodEnum;
+import cool.doudou.pay.assistant.core.enums.RestfulMethodEnum;
 import cool.doudou.pay.assistant.core.memory.WxPayMem;
 import cool.doudou.pay.assistant.core.util.RsaUtil;
 
@@ -29,7 +29,7 @@ public class WxSigner {
      * @param reqBody                 请求Body数据：POST｜PUT时传入对应值，其他传入空字符串
      * @return 授权字符串
      */
-    public static String getAuthorization(String mchId, String certificateSerialNumber, ReqMethodEnum reqMethod, String reqAbsoluteUrl, Map<String, Object> reqParam, String reqBody) {
+    public static String getAuthorization(String mchId, String certificateSerialNumber, RestfulMethodEnum reqMethod, String reqAbsoluteUrl, Map<String, Object> reqParam, String reqBody) {
         String schema = "WECHATPAY2-SHA256-RSA2048";
         long timestamp = System.currentTimeMillis() / 1000;
         String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
@@ -94,7 +94,7 @@ public class WxSigner {
      * @param signatureStr 签名字符串
      * @return true-验证通过；false-验证失败
      */
-    public static boolean certificateVerify(X509Certificate certificate, String timestamp, String nonceStr, String jsonStr, String signatureStr) {
+    public static boolean verify(X509Certificate certificate, String timestamp, String nonceStr, String jsonStr, String signatureStr) {
         try {
             // 构造签名字符串
             String sbSignatureValue = timestamp + "\n" +

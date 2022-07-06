@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.File;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -115,9 +114,9 @@ public class WxPayTest {
         httpHelper.setOkHttpClient(new OkHttpClient());
         wxPayApi.setHttpHelper(httpHelper);
 
-        CertificateUtil.loadWxPrivateKey(new File(payWxProperties.getCertificatePath()));
+        CertificateUtil.loadWxSecretKey(payWxProperties.getPrivateKeyPath());
 
-        wxPayApi.loadCertificate();
+        wxPayApi.loadPlatformCertificate();
 
         return wxPayApi;
     }

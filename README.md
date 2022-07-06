@@ -28,15 +28,41 @@ pay:
   modes:
     - wx
     - ali
-  notify-server: http://127.0.0.1:8000
+  notify-server-address: http://127.0.0.1:8000
   wx:
     appId: wx000001
     mchId: 14000001
+    private-key-path: /home/test.pem
+    private-key-serial-number: 70000000001
+    api-key-v3: abcdefg
   ali:
     appId: ali00001
+    private-key-path: /home/test.pem
+    public-key-path: /home/test-pub.pem
 ```
 
 ### 使用方式
+
+> 下单
+
+| 参数          | 名称     | 微信                              | 支付宝                    |
+|-------------|--------|---------------------------------|------------------------|
+| outTradeNo  | 商户订单号  | 数字、大小写字母_-*且在同一个商户号下唯一          | 字母、数字、下划线且需保证在商户端不重复   |
+| money       | 总金额    | 单位为分                            | 单位为元，精确到小数点后两位         |
+| description | 商品描述   | -                               | 不可使用特殊字符，如 /，=，& 等     |
+| timeExpire  | 订单失效时间 | 格式为yyyy-MM-DDTHH:mm:ss+TIMEZONE | 格式为yyyy-MM-dd HH:mm:ss |
+| attach      | 附加数据   | 在查询API和支付通知中原样返回                | 在异步通知、对账单中原样返回         |
+| uid         | 用户ID   | 用户标识                            | 买家支付宝用户ID              |
+
+> 退款
+
+| 参数          | 名称    | 微信                          | 支付宝                  |
+|-------------|-------|-----------------------------|----------------------|
+| outTradeNo  | 商户订单号 | 数字、大小写字母_-*且在同一个商户号下唯一      | 字母、数字、下划线且需保证在商户端不重复 |
+| outRefundNo | 退款单号  | 商户系统内部唯一，只能是数字、大小写字母_-*@、竖线 | 标识一次退款请求，需要保证在交易号下唯一 |
+| reason      | 退款原因  | -                           | -                    |
+| money       | 总金额   | 单位为分                        | 无此参数                 |
+| refundMoney | 退款金额  | 单位为分                        | 单位为元                 |
 
 > 支付通知
 
@@ -48,23 +74,23 @@ public class PayNotifyComponent {
      * 微信
      */
     @WxPayNotify
-    public void wxPayNotify() {
-
+    public void wxPayNotify(String message) {
+        System.out.println(message);
     }
 
     /**
      * 支付宝
      */
     @AliPayNotify
-    public void aliPayNotify() {
-
+    public void aliPayNotify(String message) {
+        System.out.println(message);
     }
 }
 ```
 
 ### 其他说明
 
-> 支付宝RSA密钥字符串转换成pem文件
+> 支付宝RSA私钥字符串转换成pem文件
 
 - openssl命令生成PKCS1格式密钥文件 *.pem，文件以-----BEGIN RSA PRIVATE KEY-----开头
 
@@ -77,6 +103,10 @@ openssl rsa -inform PEM -in *.txt -outform PEM -out *.pem<br>
 ```shell
 openssl pkcs8 -topk8 -inform PEM -in *.pem -outform PEM -out *_pkcs8.pem -nocrypt
 ```
+
+> 支付宝RSA公钥字符串转换成pem文件
+
+- txt文件：开头添加-----BEGIN PUBLIC KEY-----，结尾添加-----END PUBLIC KEY-----，更改后缀名为.pem即可
 
 ## 版权
 
