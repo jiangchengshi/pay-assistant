@@ -9,7 +9,11 @@
 
 ## 特点
 
-> 配置灵活，基于微信支付API、支付宝支付API，没有改变任何框架结构，只为简化； 简单注解，即可实现消息MQ
+> 基于微信支付API、支付宝支付API封装
+
+- 简单注解配置，即可实现支付相关操作
+- 省掉碍眼繁琐的签名与验签，简化支付交互过程
+- 透传返回交互结果
 
 ## 使用指引
 
@@ -100,7 +104,7 @@ public class PayNotifyComponent {
 - openssl命令生成PKCS1格式密钥文件 *.pem，文件以-----BEGIN RSA PRIVATE KEY-----开头
 
 ```shell
-openssl rsa -inform PEM -in *.txt -outform PEM -out *.pem<br>
+openssl rsa -inform PEM -in *.txt -outform PEM -out *.pem
 ```
 
 - openssl命令转换成PKCS8格式密钥文件 *.pem，文件以-----BEGIN PRIVATE KEY-----开头

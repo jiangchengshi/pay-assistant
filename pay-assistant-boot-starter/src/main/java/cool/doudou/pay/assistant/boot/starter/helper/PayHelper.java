@@ -15,7 +15,7 @@ import java.io.ByteArrayInputStream;
  * @author jiangcs
  * @since 2022/2/19
  */
-public class PayHelper {
+public class PayHelper extends SuperPayHelper {
     private WxPayApi wxPayApi;
     private AliPayApi aliPayApi;
 
@@ -27,6 +27,8 @@ public class PayHelper {
      * @return JSON格式结果
      */
     public String place(PayModeEnum payModeEnum, PlaceOrderParam placeOrderParam) {
+        super.support(payModeEnum);
+
         switch (payModeEnum) {
             case WX:
                 return wxPayApi.place(placeOrderParam);
@@ -45,6 +47,8 @@ public class PayHelper {
      * @return JSON格式结果
      */
     public String query(PayModeEnum payModeEnum, String outTradeNo) {
+        super.support(payModeEnum);
+
         switch (payModeEnum) {
             case WX:
                 return wxPayApi.query(outTradeNo);
@@ -63,6 +67,8 @@ public class PayHelper {
      * @return JSON格式结果
      */
     public String close(PayModeEnum payModeEnum, String outTradeNo) {
+        super.support(payModeEnum);
+
         switch (payModeEnum) {
             case WX:
                 return wxPayApi.close(outTradeNo);
@@ -81,6 +87,8 @@ public class PayHelper {
      * @return JSON格式结果
      */
     public String refund(PayModeEnum payModeEnum, RefundParam refundParam) {
+        super.support(payModeEnum);
+
         switch (payModeEnum) {
             case WX:
                 return wxPayApi.refund(refundParam);
@@ -99,6 +107,8 @@ public class PayHelper {
      * @return JSON格式结果
      */
     public String tradeBill(PayModeEnum payModeEnum, String billDate) {
+        super.support(payModeEnum);
+
         switch (payModeEnum) {
             case WX:
                 return wxPayApi.tradeBill(billDate);
@@ -117,6 +127,8 @@ public class PayHelper {
      * @return JSON格式结果
      */
     public ByteArrayInputStream downloadBill(PayModeEnum payModeEnum, String billUrl) {
+        super.support(payModeEnum);
+
         switch (payModeEnum) {
             case WX:
                 return wxPayApi.downloadBill(billUrl);
