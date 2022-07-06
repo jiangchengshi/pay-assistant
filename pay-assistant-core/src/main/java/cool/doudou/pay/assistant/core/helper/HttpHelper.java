@@ -8,13 +8,14 @@ import cool.doudou.pay.assistant.core.util.ComUtil;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * HttpHelper
@@ -29,21 +30,21 @@ public class HttpHelper {
     /**
      * get 请求 微信
      *
-     * @param serverAddress           服务器地址
-     * @param reqAbsoluteUrl          请求API地址
-     * @param params                  Query参数
-     * @param mchId                   商户ID
-     * @param certificateSerialNumber 商户证书序列号
+     * @param serverAddress          服务器地址
+     * @param reqAbsoluteUrl         请求API地址
+     * @param params                 Query参数
+     * @param mchId                  商户ID
+     * @param privateKeySerialNumber 商户密钥证书序列号
      * @return 结果
      */
-    public String doGet4Wx(String serverAddress, String reqAbsoluteUrl, Map<String, Object> params, String mchId, String certificateSerialNumber) {
+    public String doGet4Wx(String serverAddress, String reqAbsoluteUrl, Map<String, Object> params, String mchId, String privateKeySerialNumber) {
         String url = serverAddress + reqAbsoluteUrl;
 
         Request.Builder builder = new Request.Builder();
         // Header
         builder.addHeader("Content-Type", "application/json");
         builder.addHeader("Accept", "application/json");
-        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, certificateSerialNumber, RestfulMethodEnum.GET, reqAbsoluteUrl, params, ""));
+        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, privateKeySerialNumber, RestfulMethodEnum.GET, reqAbsoluteUrl, params, ""));
         // Query
         StringBuilder sbParam = new StringBuilder();
         if (params != null && params.keySet().size() > 0) {
@@ -64,6 +65,46 @@ public class HttpHelper {
         System.out.println("params => " + params);
 
         return execute(request);
+    }
+
+    /**
+     * getInputStream 请求 微信
+     *
+     * @param serverAddress
+     * @param reqAbsoluteUrl
+     * @param params
+     * @param mchId
+     * @param privateKeySerialNumber
+     * @return
+     */
+    public ByteArrayInputStream doGetInputStream4Wx(String serverAddress, String reqAbsoluteUrl, Map<String, Object> params, String mchId, String privateKeySerialNumber) {
+        String url = serverAddress + reqAbsoluteUrl;
+
+        Request.Builder builder = new Request.Builder();
+        // Header
+        builder.addHeader("Content-Type", "application/json");
+        builder.addHeader("Accept", "application/json");
+        builder.addHeader("Authorization", WxSigner.getAuthorization(mchId, privateKeySerialNumber, RestfulMethodEnum.GET, reqAbsoluteUrl, params, ""));
+        // Query
+        StringBuilder sbParam = new StringBuilder();
+        if (params != null && params.keySet().size() > 0) {
+            for (String key : params.keySet()) {
+                if (sbParam.length() <= 0) {
+                    sbParam.append("?").append(key).append("=").append(params.get(key));
+                } else {
+                    sbParam.append("&").append(key).append("=").append(params.get(key));
+                }
+            }
+        }
+        url += sbParam;
+        Request request = builder.url(url).build();
+
+        System.out.println("===========HTTP START==========");
+        System.out.println("url => GET[wx] " + url);
+        System.out.println("headers => " + JSONObject.toJSONString(request.headers()));
+        System.out.println("params => " + params);
+
+        return executeInputStream(request);
     }
 
     /**
@@ -153,15 +194,40 @@ public class HttpHelper {
     private String execute(Request request) {
         try (Response response = okHttpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                String result = Objects.requireNonNull(response.body()).string();
-                System.out.println("execute success: " + result);
-                System.out.println("===========HTTP END==========");
-                return result;
+                ResponseBody responseBody = response.body();
+                if (!ObjectUtils.isEmpty(responseBody)) {
+                    String result = responseBody.string();
+                    System.out.println("execute success: " + result);
+                    System.out.println("===========HTTP END==========");
+                    return result;
+                }
             }
             System.err.println("execute fail: " + response);
             System.out.println("===========HTTP END==========");
         } catch (Exception e) {
+            System.err.println("execute exception: ");
             e.printStackTrace();
+            System.out.println("===========HTTP END==========");
+        }
+        return null;
+    }
+
+    private ByteArrayInputStream executeInputStream(Request request) {
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (!ObjectUtils.isEmpty(responseBody)) {
+                    System.out.println("execute success: " + responseBody.contentType() + " => " + responseBody.contentLength());
+                    System.out.println("===========HTTP END==========");
+                    return new ByteArrayInputStream(responseBody.bytes());
+                }
+            }
+            System.err.println("execute fail: " + response);
+            System.out.println("===========HTTP END==========");
+        } catch (Exception e) {
+            System.err.println("execute exception: ");
+            e.printStackTrace();
+            System.out.println("===========HTTP END==========");
         }
         return null;
     }

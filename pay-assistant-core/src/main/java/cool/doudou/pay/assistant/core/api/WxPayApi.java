@@ -204,7 +204,7 @@ public class WxPayApi {
      * @param billUrl 账单地址
      * @return 账单信息
      */
-    public String downloadBill(String billUrl) {
+    public ByteArrayInputStream downloadBill(String billUrl) {
         String[] billUrlArr = billUrl.split("\\?");
         if (billUrlArr.length != 2) {
             throw new RuntimeException("账单地址格式错误");
@@ -219,7 +219,7 @@ public class WxPayApi {
         Map<String, Object> params = new HashMap<>(1);
         params.put(paramArr[0], paramArr[1]);
 
-        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doGetInputStream4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     @Autowired
