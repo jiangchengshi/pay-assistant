@@ -56,9 +56,8 @@ public class HttpHelper {
         url += sbParam;
         Request request = builder.url(url).build();
 
-        System.out.println("===========HTTP START==========");
-        System.out.println("url => GET[wx] " + url);
-        System.out.println("params => " + params);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] url => GET " + url);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] params => " + params);
 
         return execute(request);
     }
@@ -95,9 +94,8 @@ public class HttpHelper {
         url += sbParam;
         Request request = builder.url(url).build();
 
-        System.out.println("===========HTTP START==========");
-        System.out.println("url => GET[wx] " + url);
-        System.out.println("params => " + params);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] url => GET " + url);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] params => " + params);
 
         return executeInputStream(request);
     }
@@ -125,9 +123,8 @@ public class HttpHelper {
         RequestBody requestBody = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
         Request request = builder.url(url).post(requestBody).build();
 
-        System.out.println("===========HTTP START==========");
-        System.out.println("url => POST[wx] " + url);
-        System.out.println("body => " + jsonBody);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] url => POST " + url);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] body => " + jsonBody);
 
         return execute(request);
     }
@@ -177,10 +174,9 @@ public class HttpHelper {
         RequestBody requestBody = formBuilder.build();
         Request request = builder.url(url).post(requestBody).build();
 
-        System.out.println("===========HTTP START==========");
-        System.out.println("url => POST[ali] " + url);
-        System.out.println("method => " + method);
-        System.out.println("params => " + params);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [ali] url => POST " + url);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [ali] method => " + method);
+        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [ali] params => " + params);
 
         return execute(request);
     }
@@ -191,17 +187,14 @@ public class HttpHelper {
                 ResponseBody responseBody = response.body();
                 if (!ObjectUtils.isEmpty(responseBody)) {
                     String result = responseBody.string();
-                    System.out.println("execute success: " + result);
-                    System.out.println("===========HTTP END==========");
+                    System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => success: " + result);
                     return result;
                 }
             }
-            System.err.println("execute fail: " + response);
-            System.out.println("===========HTTP END==========");
+            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => fail: " + response);
         } catch (Exception e) {
-            System.err.println("execute exception: ");
+            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => exception: ");
             e.printStackTrace();
-            System.out.println("===========HTTP END==========");
         }
         return null;
     }
@@ -211,17 +204,14 @@ public class HttpHelper {
             if (response.isSuccessful()) {
                 ResponseBody responseBody = response.body();
                 if (!ObjectUtils.isEmpty(responseBody)) {
-                    System.out.println("execute success: " + responseBody.contentType() + " => " + responseBody.contentLength());
-                    System.out.println("===========HTTP END==========");
+                    System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => success: " + responseBody.contentType() + "[" + responseBody.contentLength() + "]");
                     return new ByteArrayInputStream(responseBody.bytes());
                 }
             }
-            System.err.println("execute fail: " + response);
-            System.out.println("===========HTTP END==========");
+            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => fail: " + response);
         } catch (Exception e) {
-            System.err.println("execute exception: ");
+            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => exception: ");
             e.printStackTrace();
-            System.out.println("===========HTTP END==========");
         }
         return null;
     }
