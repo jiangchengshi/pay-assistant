@@ -15,9 +15,14 @@ import java.util.Arrays;
 public class SuperPayHelper {
     private PayProperties payProperties;
 
+    /**
+     * 判断 是否支持指i福方式
+     *
+     * @param payModeEnum 支付方式
+     */
     protected void support(PayModeEnum payModeEnum) {
         if (!Arrays.asList(payProperties.getModes()).contains(payModeEnum.code())) {
-            throw new RuntimeException(payModeEnum.note() + "支付未配置");
+            throw new RuntimeException("支付方式[" + payModeEnum.note() + "]参数未配置");
         }
     }
 

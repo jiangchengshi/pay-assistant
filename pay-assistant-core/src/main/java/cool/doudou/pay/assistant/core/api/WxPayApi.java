@@ -30,15 +30,13 @@ public class WxPayApi {
     private PayWxProperties payWxProperties;
     private HttpHelper httpHelper;
 
-    private final String serverAddress = "https://api.mch.weixin.qq.com";
-
     /**
      * 加载平台证书
      */
     public void loadPlatformCertificate() {
         String reqAbsoluteUrl = "/v3/certificates";
 
-        String result = httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, null, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        String result = httpHelper.doGet4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, null, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
         if (!ObjectUtils.isEmpty(result)) {
             JSONObject resultObj = JSONObject.parseObject(result);
             JSONArray dataArr = resultObj.getJSONArray("data");
@@ -110,7 +108,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/pay/transactions/jsapi";
 
-        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doPost4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -129,7 +127,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/pay/transactions/out-trade-no/" + outTradeNo;
 
-        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doGet4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -148,7 +146,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/pay/transactions/out-trade-no/" + outTradeNo + "/close";
 
-        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doPost4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -174,7 +172,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/refund/domestic/refunds";
 
-        return httpHelper.doPost4Wx(serverAddress, reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doPost4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, jsonObject.toJSONString(), payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -193,7 +191,7 @@ public class WxPayApi {
 
         String reqAbsoluteUrl = "/v3/bill/tradebill";
 
-        return httpHelper.doGet4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doGet4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     /**
@@ -208,7 +206,7 @@ public class WxPayApi {
             throw new RuntimeException("账单地址格式错误");
         }
 
-        String reqAbsoluteUrl = billUrlArr[0].replace(serverAddress, "");
+        String reqAbsoluteUrl = billUrlArr[0].replace(payWxProperties.getServerAddress(), "");
 
         String[] paramArr = billUrlArr[1].split("=");
         if (paramArr.length != 2) {
@@ -217,7 +215,7 @@ public class WxPayApi {
         Map<String, Object> params = new HashMap<>(1);
         params.put(paramArr[0], paramArr[1]);
 
-        return httpHelper.doGetInputStream4Wx(serverAddress, reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
+        return httpHelper.doGetInputStream4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, params, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
     }
 
     @Autowired

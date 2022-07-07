@@ -7,6 +7,7 @@
         <property name="notifyServerAddress" value="http://dev.hems.chaobiao.qdhlm.cn"/>
     </bean>
     <bean id="payWxProperties" class="cool.doudou.pay.assistant.core.properties.PayWxProperties">
+        <property name="serverAddress" value="https://api.mch.weixin.qq.com"/>
         <property name="appId" value="wx77b2dd44b7ef65a8"/>
         <property name="mchId" value="1499142662"/>
         <property name="privateKeyPath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_key.pem"/>
@@ -14,6 +15,7 @@
         <property name="apiKeyV3" value="qingdaohailongmadianzi2022070200"/>
     </bean>
     <bean id="payAliProperties" class="cool.doudou.pay.assistant.core.properties.PayAliProperties">
+        <property name="serverAddress" value="https://openapi.alipaydev.com/gateway.do"/>
         <property name="appId" value="2021000121616191"/>
         <property name="privateKeyPath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_key_ali.pem"/>
         <property name="publicKeyPath" value="/Users/jiangcs/Downloads/pay-pem/apiclient_pub_key_ali.pem"/>

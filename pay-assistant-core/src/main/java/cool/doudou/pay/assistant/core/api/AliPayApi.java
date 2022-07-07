@@ -24,8 +24,6 @@ public class AliPayApi {
     private PayAliProperties payAliProperties;
     private HttpHelper httpHelper;
 
-    private final String serverAddress = "https://openapi.alipaydev.com/gateway.do";
-
     public String place(PlaceOrderParam placeOrderParam) {
         if (ObjectUtils.isEmpty(placeOrderParam.getOutTradeNo())) {
             throw new RuntimeException("商户订单号不能为空");
@@ -54,7 +52,7 @@ public class AliPayApi {
         }
         params.put("biz_content", apiParamObj.toJSONString());
 
-        return httpHelper.doPost4Ali(serverAddress, AliInterfaceEnum.TRADE_CREATE.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
+        return httpHelper.doPost4Ali(payAliProperties.getServerAddress(), AliInterfaceEnum.TRADE_CREATE.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
     }
 
     public String query(String outTradeNo) {
@@ -68,7 +66,7 @@ public class AliPayApi {
         apiParamObj.put("out_trade_no", outTradeNo);
         params.put("biz_content", apiParamObj.toJSONString());
 
-        return httpHelper.doPost4Ali(serverAddress, AliInterfaceEnum.TRADE_QUERY.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
+        return httpHelper.doPost4Ali(payAliProperties.getServerAddress(), AliInterfaceEnum.TRADE_QUERY.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
     }
 
     public String close(String outTradeNo) {
@@ -82,7 +80,7 @@ public class AliPayApi {
         apiParamObj.put("out_trade_no", outTradeNo);
         params.put("biz_content", apiParamObj.toJSONString());
 
-        return httpHelper.doPost4Ali(serverAddress, AliInterfaceEnum.TRADE_CLOSE.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
+        return httpHelper.doPost4Ali(payAliProperties.getServerAddress(), AliInterfaceEnum.TRADE_CLOSE.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
     }
 
     public String refund(RefundParam refundParam) {
@@ -103,7 +101,7 @@ public class AliPayApi {
         }
         params.put("biz_content", apiParamObj.toJSONString());
 
-        return httpHelper.doPost4Ali(serverAddress, AliInterfaceEnum.TRADE_REFUND.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
+        return httpHelper.doPost4Ali(payAliProperties.getServerAddress(), AliInterfaceEnum.TRADE_REFUND.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
     }
 
     /**
@@ -123,7 +121,7 @@ public class AliPayApi {
         apiParamObj.put("bill_date", billDate);
         params.put("biz_content", apiParamObj.toJSONString());
 
-        return httpHelper.doPost4Ali(serverAddress, AliInterfaceEnum.TRADE_BILL_QUERY.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
+        return httpHelper.doPost4Ali(payAliProperties.getServerAddress(), AliInterfaceEnum.TRADE_BILL_QUERY.method(), params, payAliProperties.getAppId(), payProperties.getNotifyServerAddress());
     }
 
     @Autowired

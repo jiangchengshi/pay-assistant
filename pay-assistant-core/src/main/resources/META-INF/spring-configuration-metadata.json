@@ -17,10 +17,16 @@
       ]
     },
     {
-      "name": "pay.nofify-server-address",
+      "name": "pay.notify-server-address",
       "type": "java.lang.String",
       "description": "通知服务地址",
       "sourceType": "cool.doudou.pay.assistant.core.properties.PayProperties"
+    },
+    {
+      "name": "pay.wx.server-address",
+      "type": "java.lang.String",
+      "description": "微信服务地址",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
     },
     {
       "name": "pay.wx.app-id",
@@ -51,6 +57,12 @@
       "type": "java.lang.String",
       "description": "微信APIv3密钥",
       "sourceType": "cool.doudou.pay.assistant.core.properties.PayWxProperties"
+    },
+    {
+      "name": "pay.ali.server-address",
+      "type": "java.lang.String",
+      "description": "支付宝服务地址",
+      "sourceType": "cool.doudou.pay.assistant.core.properties.PayAliProperties"
     },
     {
       "name": "pay.ali.app-id",

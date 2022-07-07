@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "pay.wx")
 public class PayWxProperties {
+    private String serverAddress;
     private String appId;
     private String mchId;
     private String privateKeyPath;
