@@ -3,6 +3,8 @@ package cool.doudou.pay.assistant.core.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 /**
  * PayProperties
  *
@@ -12,6 +14,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "pay")
 public class PayProperties {
-    private String[] modes;
+    private List<String> modes;
     private String notifyServerAddress;
 }

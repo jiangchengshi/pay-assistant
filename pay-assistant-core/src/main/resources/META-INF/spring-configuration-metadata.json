@@ -8,7 +8,7 @@
   "properties": [
     {
       "name": "pay.modes",
-      "type": "java.lang.List",
+      "type": "java.util.List",
       "description": "支付方式",
       "sourceType": "cool.doudou.pay.assistant.core.properties.PayProperties",
       "defaultValue": [

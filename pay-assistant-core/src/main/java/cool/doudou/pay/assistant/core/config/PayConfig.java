@@ -12,8 +12,7 @@ import cool.doudou.pay.assistant.core.properties.PayWxProperties;
 import cool.doudou.pay.assistant.core.util.CertificateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-
-import java.util.Arrays;
+import org.springframework.util.ObjectUtils;
 
 /**
  * PayConfig
@@ -48,8 +47,18 @@ public class PayConfig {
     }
 
     @Autowired
-    public void initSecretKey(PayProperties payProperties, PayWxProperties payWxProperties, PayAliProperties payAliProperties, WxPayApi wxPayApi) {
-        if (Arrays.asList(payProperties.getModes()).contains(PayModeEnum.WX.code())) {
+    public void init(PayProperties payProperties, PayWxProperties payWxProperties, PayAliProperties payAliProperties, WxPayApi wxPayApi) {
+        if (ObjectUtils.isEmpty(payProperties.getModes())) {
+            throw new RuntimeException("支付模式参数未配置");
+        }
+
+        if (payProperties.getModes().contains(PayModeEnum.WX.code())) {
+            if (ObjectUtils.isEmpty(payWxProperties.getServerAddress()) || ObjectUtils.isEmpty(payWxProperties.getAppId())
+                    || ObjectUtils.isEmpty(payWxProperties.getMchId()) || ObjectUtils.isEmpty(payWxProperties.getPrivateKeyPath())
+                    || ObjectUtils.isEmpty(payWxProperties.getPrivateKeySerialNumber()) || ObjectUtils.isEmpty(payWxProperties.getApiKeyV3())) {
+                throw new RuntimeException("微信支付参数配置缺失");
+            }
+
             try {
                 // 加载微信商户密钥文件
                 CertificateUtil.loadWxSecretKey(payWxProperties.getPrivateKeyPath());
@@ -61,7 +70,12 @@ public class PayConfig {
             }
         }
 
-        if (Arrays.asList(payProperties.getModes()).contains(PayModeEnum.ALI.code())) {
+        if (payProperties.getModes().contains(PayModeEnum.ALI.code())) {
+            if (ObjectUtils.isEmpty(payAliProperties.getServerAddress()) || ObjectUtils.isEmpty(payAliProperties.getAppId())
+                    || ObjectUtils.isEmpty(payAliProperties.getPrivateKeyPath()) || ObjectUtils.isEmpty(payAliProperties.getPublicKeyPath())) {
+                throw new RuntimeException("支付宝支付参数配置缺失");
+            }
+
             try {
                 // 加载支付宝商户密钥文件
                 CertificateUtil.loadAliSecretKey(payAliProperties.getPrivateKeyPath(), payAliProperties.getPublicKeyPath());

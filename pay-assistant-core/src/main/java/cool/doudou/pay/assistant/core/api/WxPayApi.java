@@ -38,7 +38,7 @@ public class WxPayApi {
 
         String result = httpHelper.doGet4Wx(payWxProperties.getServerAddress(), reqAbsoluteUrl, null, payWxProperties.getMchId(), payWxProperties.getPrivateKeySerialNumber());
         if (!ObjectUtils.isEmpty(result)) {
-            JSONObject resultObj = JSONObject.parseObject(result);
+            JSONObject resultObj = JSONObject.parseObject(result, JSONObject.class);
             JSONArray dataArr = resultObj.getJSONArray("data");
             for (int i = 0, len = dataArr.size(); i < len; i++) {
                 try {

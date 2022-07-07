@@ -1,13 +1,11 @@
 package cool.doudou.pay.assistant.core.helper;
 
-import com.alibaba.fastjson2.JSONObject;
 import cool.doudou.pay.assistant.core.enums.RestfulMethodEnum;
 import cool.doudou.pay.assistant.core.signer.AliSigner;
 import cool.doudou.pay.assistant.core.signer.WxSigner;
 import cool.doudou.pay.assistant.core.util.ComUtil;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +58,6 @@ public class HttpHelper {
 
         System.out.println("===========HTTP START==========");
         System.out.println("url => GET[wx] " + url);
-        System.out.println("headers => " + JSONObject.toJSONString(request.headers()));
         System.out.println("params => " + params);
 
         return execute(request);
@@ -100,7 +97,6 @@ public class HttpHelper {
 
         System.out.println("===========HTTP START==========");
         System.out.println("url => GET[wx] " + url);
-        System.out.println("headers => " + JSONObject.toJSONString(request.headers()));
         System.out.println("params => " + params);
 
         return executeInputStream(request);
@@ -131,7 +127,6 @@ public class HttpHelper {
 
         System.out.println("===========HTTP START==========");
         System.out.println("url => POST[wx] " + url);
-        System.out.println("headers => " + JSONObject.toJSONString(request.headers()));
         System.out.println("body => " + jsonBody);
 
         return execute(request);
@@ -184,8 +179,8 @@ public class HttpHelper {
 
         System.out.println("===========HTTP START==========");
         System.out.println("url => POST[ali] " + url);
-        System.out.println("params => " + JSONObject.toJSONString(params));
-        System.out.println("public-params => " + JSONObject.toJSONString(publicParamMap));
+        System.out.println("method => " + method);
+        System.out.println("params => " + params);
 
         return execute(request);
     }
