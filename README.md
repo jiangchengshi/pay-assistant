@@ -45,7 +45,7 @@ pay:
     public-key-path: /home/test-pub.pem
 ```
 
-### 使用方式
+### 参数说明
 
 > 下单
 
@@ -73,6 +73,62 @@ pay:
 - 微信交易账单需要两步：首先tradeBill获取账单地址，然后downloadBill返回字节数组数据流
 - 支付宝交易账单需要一步：tradeBill获取账单地址，自行请求下载文件
 
+### 使用方式
+
+> 下单、查询、关闭、退款、交易账单
+
+- PayModeEnum.WX：微信
+- PayModeEnum.ALI：支付宝
+
+```java
+
+@Component
+public class PayComponent {
+    @Autowired
+    private PayHelper payHelper;
+
+    /**
+     * 下单
+     */
+    public void place() {
+        PlaceOrderParam placeOrderParam = new PlaceOrderParam();
+        // ...
+        payHelper.place(PayModeEnum.WX, placeOrderParam);
+    }
+
+    /**
+     * 查询
+     */
+    public void query() {
+        payHelper.query(PayModeEnum.WX, "xxxxxx00001");
+    }
+
+    /**
+     * 关闭
+     */
+    public void close() {
+        payHelper.close(PayModeEnum.WX, "xxxxxx00001");
+    }
+
+    /**
+     * 退款
+     */
+    public void refund() {
+        RefundParam refundParam = new RefundParam();
+        // ...
+        payHelper.refund(PayModeEnum.WX, refundParam);
+    }
+
+    /**
+     * 交易账单
+     */
+    public void tradeBill() {
+        payHelper.tradeBill(PayModeEnum.WX, "2022-07-07");
+    }
+}
+
+```
+
 > 支付通知
 
 ```java
@@ -98,6 +154,11 @@ public class PayNotifyComponent {
 ```
 
 ### 其他说明
+
+> 支付通知URL：系统会根据注解@WxPayNotify、@AliPayNotify回调方法
+
+- 微信：/pay-notify/wx
+- 支付宝：/pay-notify/ali
 
 > 支付宝RSA私钥字符串转换成pem文件
 
