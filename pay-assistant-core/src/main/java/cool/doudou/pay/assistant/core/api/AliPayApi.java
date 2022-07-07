@@ -8,7 +8,6 @@ import cool.doudou.pay.assistant.core.helper.HttpHelper;
 import cool.doudou.pay.assistant.core.properties.PayAliProperties;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import java.util.Map;
  * @author jiangcs
  * @since 2022/06/23
  */
-@Component
 public class AliPayApi {
     private PayProperties payProperties;
     private PayAliProperties payAliProperties;

@@ -10,7 +10,6 @@ import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
 import cool.doudou.pay.assistant.core.util.AesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +25,6 @@ import java.util.Map;
  * @author jiangcs
  * @since 2022/06/23
  */
-@Component
 public class WxPayApi {
     private PayProperties payProperties;
     private PayWxProperties payWxProperties;

@@ -23,7 +23,6 @@ import java.util.Map;
  * @author jiangcs
  * @since 2022/06/30
  */
-@Component
 public class HttpHelper {
     private OkHttpClient okHttpClient;
 

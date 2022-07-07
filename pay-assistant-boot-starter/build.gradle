@@ -5,7 +5,6 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework:spring-web")
-    implementation("com.alibaba.fastjson2:fastjson2:${depVersion.fastjson2}")
 
     compileOnly("javax.servlet:servlet-api:2.5")
 }

@@ -4,8 +4,8 @@ dependencies {
     api project(":pay-assistant-annotation")
 
     implementation("org.springframework.boot:spring-boot-autoconfigure")
-    implementation("com.squareup.okhttp3:okhttp:${depVersion.okhttp}")
-    implementation("com.alibaba.fastjson2:fastjson2:${depVersion.fastjson2}")
+    api("com.squareup.okhttp3:okhttp:${depVersion.okhttp}")
+    api("com.alibaba.fastjson2:fastjson2:${depVersion.fastjson2}")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }

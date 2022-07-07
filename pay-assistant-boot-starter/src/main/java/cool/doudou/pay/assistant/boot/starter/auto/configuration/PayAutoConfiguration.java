@@ -1,6 +1,7 @@
 package cool.doudou.pay.assistant.boot.starter.auto.configuration;
 
 import cool.doudou.pay.assistant.boot.starter.helper.PayHelper;
+import cool.doudou.pay.assistant.core.config.OkHttpConfig;
 import cool.doudou.pay.assistant.core.config.PayConfig;
 import cool.doudou.pay.assistant.core.properties.PayAliProperties;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Import;
  * @since 2022/2/19
  */
 @EnableConfigurationProperties({PayProperties.class, PayWxProperties.class, PayAliProperties.class})
-@Import({PayConfig.class})
+@Import({PayConfig.class, OkHttpConfig.class})
 @Configuration
 public class PayAutoConfiguration {
     @ConditionalOnMissingBean(PayHelper.class)
