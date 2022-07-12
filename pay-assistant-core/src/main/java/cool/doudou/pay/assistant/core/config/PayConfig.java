@@ -10,6 +10,7 @@ import cool.doudou.pay.assistant.core.properties.PayAliProperties;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
 import cool.doudou.pay.assistant.core.util.CertificateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.ObjectUtils;
@@ -20,6 +21,7 @@ import org.springframework.util.ObjectUtils;
  * @author jiangcs
  * @since 2022/2/20
  */
+@Slf4j
 public class PayConfig {
     @Bean
     public WxPayApi wxPayApi() {
@@ -65,8 +67,7 @@ public class PayConfig {
                 // 加载微信平台证书
                 wxPayApi.loadPlatformCertificate();
             } catch (Exception e) {
-                System.err.println("加载微信密钥异常: ");
-                e.printStackTrace();
+                log.error("加载微信密钥异常: ", e);
             }
         }
 
@@ -80,8 +81,7 @@ public class PayConfig {
                 // 加载支付宝商户密钥文件
                 CertificateUtil.loadAliSecretKey(payAliProperties.getPrivateKeyPath(), payAliProperties.getPublicKeyPath());
             } catch (Exception e) {
-                System.err.println("加载支付宝密钥异常: ");
-                e.printStackTrace();
+                log.error("加载支付宝密钥异常: ", e);
             }
         }
     }

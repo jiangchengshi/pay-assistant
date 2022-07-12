@@ -9,6 +9,7 @@ import cool.doudou.pay.assistant.core.memory.WxPayMem;
 import cool.doudou.pay.assistant.core.properties.PayProperties;
 import cool.doudou.pay.assistant.core.properties.PayWxProperties;
 import cool.doudou.pay.assistant.core.util.AesUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 
@@ -25,6 +26,7 @@ import java.util.Map;
  * @author jiangcs
  * @since 2022/06/23
  */
+@Slf4j
 public class WxPayApi {
     private PayProperties payProperties;
     private PayWxProperties payWxProperties;
@@ -59,7 +61,7 @@ public class WxPayApi {
                     );
                     WxPayMem.certificateMap.put(certificateSerialNumber, x509Certificate);
                 } catch (Exception e) {
-                    System.err.println("平台证书加载异常: " + e.getMessage());
+                    log.error("平台证书加载异常: ", e);
                 }
             }
         }
