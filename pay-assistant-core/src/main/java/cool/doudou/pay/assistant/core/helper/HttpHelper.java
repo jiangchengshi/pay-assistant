@@ -4,6 +4,7 @@ import cool.doudou.pay.assistant.core.enums.RestfulMethodEnum;
 import cool.doudou.pay.assistant.core.signer.AliSigner;
 import cool.doudou.pay.assistant.core.signer.WxSigner;
 import cool.doudou.pay.assistant.core.util.ComUtil;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -21,6 +22,7 @@ import java.util.Map;
  * @author jiangcs
  * @since 2022/06/30
  */
+@Slf4j
 public class HttpHelper {
     private OkHttpClient okHttpClient;
 
@@ -56,8 +58,8 @@ public class HttpHelper {
         url += sbParam;
         Request request = builder.url(url).build();
 
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] url => GET " + url);
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] params => " + params);
+        log.info("[wx] url => GET {}", url);
+        log.info("[wx] params => {}", params);
 
         return execute(request);
     }
@@ -94,8 +96,8 @@ public class HttpHelper {
         url += sbParam;
         Request request = builder.url(url).build();
 
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] url => GET " + url);
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] params => " + params);
+        log.info("[wx] url => GET {}", url);
+        log.info("[wx] params => {}", params);
 
         return executeInputStream(request);
     }
@@ -123,8 +125,8 @@ public class HttpHelper {
         RequestBody requestBody = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
         Request request = builder.url(url).post(requestBody).build();
 
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] url => POST " + url);
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [wx] body => " + jsonBody);
+        log.info("[wx] url => POST {}", url);
+        log.info("[wx] body => {}", jsonBody);
 
         return execute(request);
     }
@@ -174,9 +176,9 @@ public class HttpHelper {
         RequestBody requestBody = formBuilder.build();
         Request request = builder.url(url).post(requestBody).build();
 
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [ali] url => POST " + url);
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [ali] method => " + method);
-        System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " [ali] params => " + params);
+        log.info("[ali] url => POST {}", url);
+        log.info("[ali] method => {}", method);
+        log.info("[ali] params => {}", params);
 
         return execute(request);
     }
@@ -187,14 +189,13 @@ public class HttpHelper {
                 ResponseBody responseBody = response.body();
                 if (!ObjectUtils.isEmpty(responseBody)) {
                     String result = responseBody.string();
-                    System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => success: " + result);
+                    log.info("execute => success: {}", result);
                     return result;
                 }
             }
-            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => fail: " + response);
+            log.error("execute => fail: {}", response);
         } catch (Exception e) {
-            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => exception: ");
-            e.printStackTrace();
+            log.error("execute => exception: ", e);
         }
         return null;
     }
@@ -204,14 +205,13 @@ public class HttpHelper {
             if (response.isSuccessful()) {
                 ResponseBody responseBody = response.body();
                 if (!ObjectUtils.isEmpty(responseBody)) {
-                    System.out.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => success: " + responseBody.contentType() + "[" + responseBody.contentLength() + "]");
+                    log.info("execute => success: {}[{}]", responseBody.contentType(), responseBody.contentLength());
                     return new ByteArrayInputStream(responseBody.bytes());
                 }
             }
-            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => fail: " + response);
+            log.error("execute => fail: {}", response);
         } catch (Exception e) {
-            System.err.println(ComUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + " execute => exception: ");
-            e.printStackTrace();
+            log.error("execute => exception: ", e);
         }
         return null;
     }
