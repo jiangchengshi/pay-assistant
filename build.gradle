@@ -25,7 +25,7 @@ buildscript {
 
 allprojects {
     group = "cool.doudou"
-    version = "1.0.2-SNAPSHOT"
+    version = "1.0.2"
 }
 
 // 子模块配置
