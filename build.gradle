@@ -5,6 +5,7 @@ buildscript {
                 springBoot: "2.7.2",
                 okhttp    : "4.10.0",
                 fastjson2 : "2.0.10",
+                log4j2    : "2.18.0",
                 lombok    : "1.18.24"
         ]
     }
@@ -58,9 +59,14 @@ subprojects {
     }
 
     dependencies {
+        compileOnly("org.apache.logging.log4j:log4j-core:${depVersion.log4j2}")
+        compileOnly("org.apache.logging.log4j:log4j-slf4j-impl:${depVersion.log4j2}")
+
         // lombok
         compileOnly("org.projectlombok:lombok:${depVersion.lombok}")
         annotationProcessor("org.projectlombok:lombok:${depVersion.lombok}")
+
+        testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     }
 
     task sourcesJar(type: Jar) {
