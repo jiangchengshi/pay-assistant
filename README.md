@@ -1,8 +1,8 @@
 # 欢迎使用 Pay-Assistant
 
-[![Maven](https://img.shields.io/badge/Maven-v2.0.0-blue)](https://search.maven.org/search?q=g:cool.doudou%20a:pay-assistant-*)
+[![Maven](https://img.shields.io/badge/Maven-v1.0.2-blue)](https://search.maven.org/search?q=g:cool.doudou%20a:pay-assistant-*)
 [![License](https://img.shields.io/badge/License-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
-![SpringBoot](https://img.shields.io/badge/SpringBoot-v2.7.2-blue)
+![SpringBoot](https://img.shields.io/badge/SpringBoot-v2.6.10-blue)
 
 ## 简介
 
